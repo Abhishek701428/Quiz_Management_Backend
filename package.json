@@ -3,10 +3,10 @@
   "version": "1.1.0",
   "description": "",
   "main": "app.js",
-  "scripts": {
-    "start": "node dist/app.js",
-    "build": "npm run compile && npm run copy-files && nodemon",
-    "copy-files": "copy .env dist\\",
+ "scripts": {
+    "start": "npm run build && node dist/app.js",
+    "build": "tsc",
+    "copy-files": "cp .env dist/.env",
     "compile": "tsc",
     "start-compiled": "node dist/app.js",
     "test": "echo \"Error: no test specified\" && exit 1"

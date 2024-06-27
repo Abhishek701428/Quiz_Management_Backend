@@ -41,10 +41,10 @@ export const createDriver = async (req, res) => {
             }
 
             const driverData = req.body;
-            if (!req.user || !req.user._id) {
-                return res.status(401).json({ message: "User not authenticated" });
-            }
-            driverData.addedBy = req.user._id;
+            // if (!req.user || !req.user._id) {
+            //     return res.status(401).json({ message: "User not authenticated" });
+            // }
+            // driverData.addedBy = req.user._id;
             const files = req.files as Express.Multer.File[];
             if (files && files.length > 0) {
                 files.forEach(file => {
@@ -170,9 +170,9 @@ export const deleteDriver = async (req: Request, res: Response) => {
 // Get all drivers
 export const getAllDrivers = async (req, res) => {
     try {
-        // const drivers = await Driver.find();
-        const userId = req.user._id; // Get the ID of the logged-in user
-        const drivers = await Driver.find({ addedBy: userId });
+        const drivers = await Driver.find();
+        // const userId = req.user._id; 
+        // const drivers = await Driver.find({ addedBy: userId });
         res.json(drivers);
     } catch (error) {
         res.status(500).json({ message: error.message });

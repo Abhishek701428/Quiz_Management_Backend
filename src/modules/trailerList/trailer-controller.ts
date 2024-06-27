@@ -43,27 +43,21 @@ export const createTrailer = async (req, res) => {
             console.log(req.files);
 
             const trailerData = req.body;
-            if (!req.user || !req.user._id) {
-                return res.status(401).json({ message: "User not authenticated" });
-            }
-            trailerData.addedBy = req.user._id;
+            
 
             // Handle file uploads
             if (req.files && req.files.length > 0) {
                 req.files.forEach(file => {
-                    if (file.fieldname === 'insuranceDocument') {
-                        trailerData.insuranceDocument = file.filename;
-                    } else if (file.fieldname === 'registrationDocument') {
-                        trailerData.registrationDocument = file.filename;
-                    } else if (file.fieldname === 'inspectionReport') {
-                        trailerData.inspectionReport = file.filename;
-                    } else if (file.fieldname === 'licenceDocument') {
-                        trailerData.licenceDocument = file.filename;
+                    if (file.fieldname === 'uploadDocument') {
+                        trailerData.uploadDocument = file.filename;
+                    } else if (file.fieldname === 'uploadDocument1') {
+                        trailerData.uploadDocument1 = file.filename;
+                    } else if (file.fieldname === 'uploadDocument2') {
+                        trailerData.uploadDocument2 = file.filename;
+                    } else if (file.fieldname === 'uploadDocument3') {
+                        trailerData.uploadDocument3 = file.filename;
                     }
                 });
-            }
-            if (!trailerData.licenceDocument) {
-                return res.status(400).json({ message: "licenceDocument is required" });
             }
             const trailer = new Trailer(trailerData);
             await trailer.save();
@@ -98,19 +92,16 @@ export const updateTrailer = async (req, res) => {
             // Handle file uploads
             if (req.files && req.files.length > 0) {
                 req.files.forEach(file => {
-                    if (file.fieldname === 'insuranceDocument') {
-                        trailer.insuranceDocument = file.filename;
-                    } else if (file.fieldname === 'registrationDocument') {
-                        trailer.registrationDocument = file.filename;
-                    } else if (file.fieldname === 'inspectionReport') {
-                        trailer.inspectionReport = file.filename;
-                    } else if (file.fieldname === 'licenceDocument') {
-                        trailer.licenceDocument = file.filename;
+                    if (file.fieldname === 'uploadDocument') {
+                        trailer.uploadDocument = file.filename;
+                    } else if (file.fieldname === 'uploadDocument1') {
+                        trailer.uploadDocument1 = file.filename;
+                    } else if (file.fieldname === 'uploadDocument2') {
+                        trailer.uploadDocument2 = file.filename;
+                    } else if (file.fieldname === 'uploadDocument3') {
+                        trailer.uploadDocument3 = file.filename;
                     }
                 });
-            }
-            if (!trailer.licenceDocument) {
-                return res.status(400).json({ message: "licenceDocument is required" });
             }
 
             await trailer.save();
@@ -134,9 +125,8 @@ export const deleteTrailer = async (req, res) => {
 // Get all trucks
 export const getTrailerAll = async (req, res) => {
     try {
-        // const trailer = await Trailer.find();
-        const userId = req.user._id;
-        const trailer = await Trailer.find({ addedBy: userId });
+        const trailer = await Trailer.find();
+      
         res.json(trailer);
     } catch (error) {
         res.status(500).json({ message: error.message });

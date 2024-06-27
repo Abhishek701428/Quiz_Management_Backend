@@ -9,32 +9,32 @@ interface IAddress {
     Street: string;
 }
 
-interface ILicense {
-    State: string;
-    Number: string;
-    ExpirationDate: Date;
-}
+// interface ILicense {
+//     State: string;
+//     Number: string;
+//     ExpirationDate: Date;
+// }
 
-interface IExperience {
-    TypeOfVehicleDriven: string;
-    From: Date;
-    To: Date;
-    ApproximateMileageDriven: number;
-}
+// interface IExperience {
+//     TypeOfVehicleDriven: string;
+//     From: Date;
+//     To: Date;
+//     ApproximateMileageDriven: number;
+// }
 
-interface IAccident {
-    Date: Date;
-    Describe: string;
-    Fatalities: number;
-    Injuries: number;
-}
+// interface IAccident {
+//     Date: Date;
+//     Describe: string;
+//     Fatalities: number;
+//     Injuries: number;
+// }
 
-interface ITrafficViolation {
-    Date: Date;
-    Violation: string;
-    State: string;
-    CommercialVehicle: boolean;
-}
+// interface ITrafficViolation {
+//     Date: Date;
+//     Violation: string;
+//     State: string;
+//     CommercialVehicle: boolean;
+// }
 
 interface IEmploymentHistory {
     From: Date;
@@ -114,10 +114,10 @@ interface IDriver extends Document {
     SocialSecurityNumber: string;
     Address: string;
     PreviousAddresses: IAddress[];
-    Licenses: ILicense[];
-    Experience: IExperience[];
-    Accidents: IAccident[];
-    TrafficViolations: ITrafficViolation[];
+    // Licenses: ILicense[];
+    // Experience: IExperience[];
+    // Accidents: IAccident[];
+    // TrafficViolations: ITrafficViolation[];
     DeniedSuspendedRevoked: {
         StateOfIssuance: string;
         Explanation: string;
@@ -195,32 +195,32 @@ const AddressSchema: Schema = new Schema({
     Street: { type: String, required: true }
 });
 
-const LicenseSchema: Schema = new Schema({
-    State: { type: String, required: true },
-    Number: { type: String, required: true },
-    ExpirationDate: { type: Date, required: true }
-});
+// const LicenseSchema: Schema = new Schema({
+//     State: { type: String, required: true },
+//     Number: { type: String, required: true },
+//     ExpirationDate: { type: Date, required: true }
+// });
 
-const ExperienceSchema: Schema = new Schema({
-    TypeOfVehicleDriven: { type: String, required: true },
-    From: { type: Date, required: true },
-    To: { type: Date, required: true },
-    ApproximateMileageDriven: { type: Number, required: true }
-});
+// const ExperienceSchema: Schema = new Schema({
+//     TypeOfVehicleDriven: { type: String, required: true },
+//     From: { type: Date, required: true },
+//     To: { type: Date, required: true },
+//     ApproximateMileageDriven: { type: Number, required: true }
+// });
 
-const AccidentSchema: Schema = new Schema({
-    Date: { type: Date, required: true },
-    Describe: { type: String, required: true },
-    Fatalities: { type: Number, required: true },
-    Injuries: { type: Number, required: true }
-});
+// const AccidentSchema: Schema = new Schema({
+//     Date: { type: Date, required: true },
+//     Describe: { type: String, required: true },
+//     Fatalities: { type: Number, required: true },
+//     Injuries: { type: Number, required: true }
+// });
 
-const TrafficViolationSchema: Schema = new Schema({
-    Date: { type: Date, required: true },
-    Violation: { type: String, required: true },
-    State: { type: String, required: true },
-    CommercialVehicle: { type: Boolean, required: true }
-});
+// const TrafficViolationSchema: Schema = new Schema({
+//     Date: { type: Date, required: true },
+//     Violation: { type: String, required: true },
+//     State: { type: String, required: true },
+//     CommercialVehicle: { type: Boolean, required: true }
+// });
 
 const EmploymentHistorySchema: Schema = new Schema({
     From: { type: Date, required: true },
@@ -300,10 +300,10 @@ const DriverSchema: Schema = new Schema({
     SocialSecurityNumber: { type: String, required: true },
     Address: { type: String, required: true },
     PreviousAddresses: { type: [AddressSchema], required: true },
-    Licenses: { type: [LicenseSchema], required: true },
-    Experience: { type: [ExperienceSchema], required: true },
-    Accidents: { type: [AccidentSchema], required: true },
-    TrafficViolations: { type: [TrafficViolationSchema], required: true },
+    // Licenses: { type: [LicenseSchema], required: true },
+    // Experience: { type: [ExperienceSchema], required: true },
+    // Accidents: { type: [AccidentSchema], required: true },
+    // TrafficViolations: { type: [TrafficViolationSchema], required: true },
     DeniedSuspendedRevoked: {
         StateOfIssuance: { type: String, required: true },
         Explanation: { type: String, required: true }

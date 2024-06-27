@@ -58,9 +58,9 @@ interface IDriver extends Document {
     uploadDocument13: string;
     clearingHouseAnnualQuery: string;
     uploadDocument14: string;
-    addedBy: Types.ObjectId;
     mcNumber: number;
     status: TruckStatus;
+    // addedBy: Types.ObjectId;
 }
 
 const DriverSchema: Schema = new Schema({
@@ -115,8 +115,8 @@ const DriverSchema: Schema = new Schema({
     uploadDocument13: { type: String, required: true },
     clearingHouseAnnualQuery: { type: String, required: true },
     uploadDocument14: { type: String, required: true },
-    addedBy: { type: Schema.Types.ObjectId, ref: 'User', required: true },
     mcNumber: { type: Number, required: true },
+    // addedBy: { type: Schema.Types.ObjectId, ref: 'User', required: true },
     status: { type: String, enum: Object.values(TruckStatus), required: true },
 });
 

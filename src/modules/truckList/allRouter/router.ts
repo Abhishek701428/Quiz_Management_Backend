@@ -6,11 +6,11 @@ import { authenticateSuperAdminAndAdmin } from '../../../middleware/authMiddlewa
 import { filterByUser } from '../../../middleware/filterByUser';
 import Truck from '../truckList/truck.models';
 //truck routes
-router.post('/truck/create', authenticateSuperAdminAndAdmin, truckController.createTruck);
-router.get('/truck/getAll', authenticateSuperAdminAndAdmin, truckController.getTruckAll);
-router.get('/truck/approved', authenticateSuperAdminAndAdmin, truckController.getApprovedTrucks);
-router.get('/truck/pending', authenticateSuperAdminAndAdmin, truckController.getPendingTrucks);
-router.get('/truck/cancelled', authenticateSuperAdminAndAdmin, truckController.getCancelledTrucks);
+router.post('/truck/create',  truckController.createTruck);
+router.get('/truck/getAll',  truckController.getTruckAll);
+router.get('/truck/approved',  truckController.getApprovedTrucks);
+router.get('/truck/pending',  truckController.getPendingTrucks);
+router.get('/truck/cancelled',  truckController.getCancelledTrucks);
 
 // for filter according by added by 
 

@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+mongoose.set('strictQuery', true);
 const connectToDatabase = async () => {
     try {
         const options: any = {  

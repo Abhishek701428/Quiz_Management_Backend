@@ -10,6 +10,10 @@ import trailerRouter from "./modules/trailerList/trailer-routes";
 import driverRouter from "./modules/driverList/driver-routes";
 import driverapplicationRouter from './modules/driverApplication/driverApplication-routes'
 import companyRouter from './modules/companyProfile/companyprofile-routes'
+import accidentRouter from './modules/driverApplicationpart/Accidentpart/accident-routes'
+import experinceRouter from './modules/driverApplicationpart/Experiencepart/experience-routes'
+import licenseRouter from './modules/driverApplicationpart/Licensepart/license-routes'
+import voilationRouter from './modules/driverApplicationpart/TrafficViolationpart/traffic-routes'
 dotenv.config();
 db();
 const app = express();
@@ -35,6 +39,10 @@ app.use('/api/trailerList', trailerRouter)
 app.use('/api/driverList', driverRouter)
 app.use('/api/driverapplication', driverapplicationRouter)
 app.use('/api/company', companyRouter)
+app.use('/api/accident', accidentRouter)
+app.use('/api/experince', experinceRouter)
+app.use('/api/license', licenseRouter)
+app.use('/api/voilation', voilationRouter)
 
 const PORT = process.env.PORT || 4000;
 app.listen(PORT, () => {

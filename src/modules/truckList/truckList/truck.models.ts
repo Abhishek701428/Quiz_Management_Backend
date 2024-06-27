@@ -13,12 +13,16 @@ export interface Truck extends Document {
   plateNumber: string;
   expirationDate: Date;
   cabCard: string;
+  uploadDocument: string;
   annualDotInspDocument: string;
+  uploadDocument1: string;
   renewalDate: Date;
   purchaseDate: Date;
   purchasePrice: number;
+  uploadDocument2: string;
   loanBankName: string;
   loanAccNumber: string;
+  uploadDocument3: string;
   bankContact: string;
   interestRate: number;
   monthlyPayment: number;
@@ -26,12 +30,8 @@ export interface Truck extends Document {
   payoffDate: Date;
   prepassTransponderNumber: string;
   fuelCardNumber: string;
-  insuranceDocument: string;
-  registrationDocument: string;
-  inspectionReport: string;
-  licenceDocument: string;
   textArea: string;
-  addedBy: mongoose.Types.ObjectId;
+  // addedBy: mongoose.Types.ObjectId;
 }
 
 const TruckSchema: Schema<Truck> = new Schema({
@@ -40,12 +40,16 @@ const TruckSchema: Schema<Truck> = new Schema({
   plateNumber: { type: String, required: true },
   expirationDate: { type: Date, required: true },
   cabCard: { type: String, required: true },
+  uploadDocument: { type: String, required: true },
   annualDotInspDocument: { type: String, required: true },
+  uploadDocument1: { type: String, required: true },
   renewalDate: { type: Date, required: true },
   purchaseDate: { type: Date, required: true },
   purchasePrice: { type: Number, required: true },
+  uploadDocument2: { type: String, required: true },
   loanBankName: { type: String, required: true },
   loanAccNumber: { type: String, required: true },
+  uploadDocument3: { type: String, required: true },
   bankContact: { type: String, required: true },
   interestRate: { type: Number, required: true },
   monthlyPayment: { type: Number, required: true },
@@ -53,12 +57,8 @@ const TruckSchema: Schema<Truck> = new Schema({
   payoffDate: { type: Date, required: true },
   prepassTransponderNumber: { type: String, required: true },
   fuelCardNumber: { type: String, required: true },
-  insuranceDocument: { type: String, required: true },
-  registrationDocument: { type: String, required: true },
-  inspectionReport: { type: String, required: true },
-  licenceDocument: { type: String, required: true },
   textArea: { type: String },
-  addedBy: { type: Schema.Types.ObjectId, ref: 'User', required: true }
+  // addedBy: { type: Schema.Types.ObjectId, ref: 'User', }
 });
 
 const Truck = mongoose.model<Truck>('Truck', TruckSchema);
