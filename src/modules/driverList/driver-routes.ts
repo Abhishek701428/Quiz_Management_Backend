@@ -3,10 +3,10 @@ const router = Router();
 
 import * as driverController from '../driverList/driver-controller';
 import { authenticateSuperAdminAndAdmin } from '../../middleware/authMiddleware';
-
+import { cloudinaryMiddleware } from '../../middleware/cloudinaryMiddleware';
 //truck routes
 router.post('/driver/create', driverController.createDriver);
-router.get('/driver/getAll', driverController.getAllDrivers);
+router.get('/driver/getAll', cloudinaryMiddleware, driverController.getAllDrivers);
 
 //ACCORDING ADMIN GET AND CREATE 
 

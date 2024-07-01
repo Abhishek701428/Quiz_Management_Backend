@@ -25,9 +25,9 @@ app.use(cors({
   origin: '*'
 }));
 app.use('/uploads', express.static('uploads'));
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 // Routes
 app.get('/', (req: Request, res: Response) => {
   res.send(`<h1>Hi, I am Hi Tech Project!</h1>`);

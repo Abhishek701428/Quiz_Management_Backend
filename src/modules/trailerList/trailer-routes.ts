@@ -3,10 +3,10 @@ const router = Router();
 
 import * as trailerController from '../trailerList/trailer-controller';
 import { authenticateSuperAdminAndAdmin } from '../../middleware/authMiddleware';
-
+import { cloudinaryMiddleware } from '../../middleware/cloudinaryMiddleware';
 //truck routes
 router.post('/trailer/create', trailerController.createTrailer);
-router.get('/trailer/getAll', trailerController.getTrailerAll);
+router.get('/trailer/getAll',cloudinaryMiddleware, trailerController.getTrailerAll);
 
 //ACCORDING ADMIN GET AND CREATE 
 

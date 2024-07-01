@@ -25,21 +25,21 @@ interface IDriver extends Document {
     workAuthorizationExpirationDate: Date;
     uploadDocument6: string;
     previousLicenseNumber: string;
-    previouslicensenumber: boolean;
+    previouslicensenumber: string;
     previousAddressLast10Years: string;
     drivingExperience: number;
-    drivingexperience: boolean
+    drivingexperience: string
     equipmentType: string;
-    equipmentDates: string;
+    equipmentDates: Date;
     approxMiles: number;
     numberOfPreviousEmployers: number;
     companyName: string;
     companyAddress: string;
-    companyDates: string;
+    companyDates: Date;
     companyPhone: string;
     companyEmail: string;
-    federalMotorCarrierSafetyRegulations1: boolean;
-    federalMotorCarrierSafetyRegulations2: boolean;
+    federalMotorCarrierSafetyRegulations1: string;
+    federalMotorCarrierSafetyRegulations2: string;
     controlledSubstanceAlcoholQuestionnaire: string;
     uploadDocument7: string;
     driverRoadTestExaminationForm: string;
@@ -58,7 +58,6 @@ interface IDriver extends Document {
     uploadDocument13: string;
     clearingHouseAnnualQuery: string;
     uploadDocument14: string;
-    mcNumber: number;
     status: TruckStatus;
     // addedBy: Types.ObjectId;
 }
@@ -82,21 +81,21 @@ const DriverSchema: Schema = new Schema({
     workAuthorizationExpirationDate: { type: Date, required: true },
     uploadDocument6: { type: String, required: true },
     previousLicenseNumber: { type: String, required: true },
-    previouslicensenumber: { type: Boolean, required: true },
+    previouslicensenumber: { type: String, required: true },
     previousAddressLast10Years: { type: String, required: true },
     drivingExperience: { type: Number, required: true },
-    drivingexperience: { type: Boolean, required: true },
+    drivingexperience: { type: String, required: true },
     equipmentType: { type: String, required: true },
-    equipmentDates: { type: String, required: true },
+    equipmentDates: { type: Date, required: true },
     approxMiles: { type: Number, required: true },
     numberOfPreviousEmployers: { type: Number, required: true },
     companyName: { type: String, required: true },
     companyAddress: { type: String, required: true },
-    companyDates: { type: String, required: true },
+    companyDates: { type: Date, required: true },
     companyPhone: { type: String, required: true },
     companyEmail: { type: String, required: true },
-    federalMotorCarrierSafetyRegulations1: { type: Boolean, required: true },
-    federalMotorCarrierSafetyRegulations2: { type: Boolean, required: true },
+    federalMotorCarrierSafetyRegulations1: { type: String, required: true },
+    federalMotorCarrierSafetyRegulations2: { type: String, required: true },
     controlledSubstanceAlcoholQuestionnaire: { type: String, required: true },
     uploadDocument7: { type: String, required: true },
     driverRoadTestExaminationForm: { type: String, required: true },
@@ -115,7 +114,6 @@ const DriverSchema: Schema = new Schema({
     uploadDocument13: { type: String, required: true },
     clearingHouseAnnualQuery: { type: String, required: true },
     uploadDocument14: { type: String, required: true },
-    mcNumber: { type: Number, required: true },
     // addedBy: { type: Schema.Types.ObjectId, ref: 'User', required: true },
     status: { type: String, enum: Object.values(TruckStatus), required: true },
 });
