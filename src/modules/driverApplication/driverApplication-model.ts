@@ -184,6 +184,7 @@ interface IDriver extends Document {
         ReviewedBySignature: string;
         MotorCarrierAddress: string;
     };
+    email: string;
 }
 
 const AddressSchema: Schema = new Schema({
@@ -369,7 +370,8 @@ const DriverSchema: Schema = new Schema({
         ReviewDate: { type: Date, required: true },
         ReviewedBySignature: { type: String, required: true },
         MotorCarrierAddress: { type: String, required: true }
-    }
+    },
+    email: { type: String, unique: true, required: true }
 });
 
 const Driver = mongoose.model<IDriver>('DriverApplication', DriverSchema);

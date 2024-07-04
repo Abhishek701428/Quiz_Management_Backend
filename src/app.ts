@@ -14,6 +14,8 @@ import accidentRouter from './modules/driverApplicationpart/Accidentpart/acciden
 import experinceRouter from './modules/driverApplicationpart/Experiencepart/experience-routes'
 import licenseRouter from './modules/driverApplicationpart/Licensepart/license-routes'
 import voilationRouter from './modules/driverApplicationpart/TrafficViolationpart/traffic-routes'
+import customerData from './modules/fileManger/Customer Data/customerdata-routes'
+import files from './modules/fileManger/Files/file-routes'
 dotenv.config();
 db();
 const app = express();
@@ -43,6 +45,9 @@ app.use('/api/accident', accidentRouter)
 app.use('/api/experince', experinceRouter)
 app.use('/api/license', licenseRouter)
 app.use('/api/voilation', voilationRouter)
+// File Manager Module
+app.use('/api/customerdata', customerData)
+app.use('/api/file', files)
 
 const PORT = process.env.PORT || 4000;
 app.listen(PORT, () => {
