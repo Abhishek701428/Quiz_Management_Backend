@@ -185,193 +185,199 @@ interface IDriver extends Document {
         MotorCarrierAddress: string;
     };
     email: string;
+    token: string;
+    status: boolean;
+    approvedBy: string
 }
 
 const AddressSchema: Schema = new Schema({
-    FromDate: { type: Date, required: true },
-    ToDate: { type: Date, required: true },
-    City: { type: String, required: true },
-    State: { type: String, required: true },
-    Zip: { type: String, required: true },
-    Street: { type: String, required: true }
+    FromDate: { type: Date, required: false },
+    ToDate: { type: Date, required: false },
+    City: { type: String, required: false },
+    State: { type: String, required: false },
+    Zip: { type: String, required: false },
+    Street: { type: String, required: false }
 });
 
 // const LicenseSchema: Schema = new Schema({
-//     State: { type: String, required: true },
-//     Number: { type: String, required: true },
-//     ExpirationDate: { type: Date, required: true }
+//     State: { type: String, required: false },
+//     Number: { type: String, required: false },
+//     ExpirationDate: { type: Date, required: false }
 // });
 
 // const ExperienceSchema: Schema = new Schema({
-//     TypeOfVehicleDriven: { type: String, required: true },
-//     From: { type: Date, required: true },
-//     To: { type: Date, required: true },
-//     ApproximateMileageDriven: { type: Number, required: true }
+//     TypeOfVehicleDriven: { type: String, required: false },
+//     From: { type: Date, required: false },
+//     To: { type: Date, required: false },
+//     ApproximateMileageDriven: { type: Number, required: false }
 // });
 
 // const AccidentSchema: Schema = new Schema({
-//     Date: { type: Date, required: true },
-//     Describe: { type: String, required: true },
-//     Fatalities: { type: Number, required: true },
-//     Injuries: { type: Number, required: true }
+//     Date: { type: Date, required: false },
+//     Describe: { type: String, required: false },
+//     Fatalities: { type: Number, required: false },
+//     Injuries: { type: Number, required: false }
 // });
 
 // const TrafficViolationSchema: Schema = new Schema({
-//     Date: { type: Date, required: true },
-//     Violation: { type: String, required: true },
-//     State: { type: String, required: true },
-//     CommercialVehicle: { type: Boolean, required: true }
+//     Date: { type: Date, required: false },
+//     Violation: { type: String, required: false },
+//     State: { type: String, required: false },
+//     CommercialVehicle: { type: Boolean, required: false }
 // });
 
 const EmploymentHistorySchema: Schema = new Schema({
-    From: { type: Date, required: true },
-    To: { type: Date, required: true },
-    Employer: { type: String, required: true },
-    Supervisor: { type: String, required: true },
-    Telephone: { type: String, required: true },
-    State: { type: String, required: true },
-    City: { type: String, required: true },
-    ZipCode: { type: String, required: true },
-    Street: { type: String, required: true },
-    SubjectToFMCSR: { type: String, required: true },
-    SubjectToCFRPart40: { type: String, required: true },
-    ReasonForLeaving: { type: String, required: true }
+    From: { type: Date, required: false },
+    To: { type: Date, required: false },
+    Employer: { type: String, required: false },
+    Supervisor: { type: String, required: false },
+    Telephone: { type: String, required: false },
+    State: { type: String, required: false },
+    City: { type: String, required: false },
+    ZipCode: { type: String, required: false },
+    Street: { type: String, required: false },
+    SubjectToFMCSR: { type: String, required: false },
+    SubjectToCFRPart40: { type: String, required: false },
+    ReasonForLeaving: { type: String, required: false }
 });
 
 const ControlledSubstanceAndAlcoholSchema: Schema = new Schema({
-    Date: { type: Date, required: true },
-    FirstName: { type: String, required: true },
-    MiddleName: { type: String, required: true },
-    LastName: { type: String, required: true },
-    DateOfBirth: { type: Date, required: true },
-    City: { type: String, required: true },
-    State: { type: String, required: true },
-    Zip: { type: String, required: true },
-    CellularTelephone: { type: String, required: true },
-    SocialSecurityNumber: { type: String, required: true },
-    Address: { type: String, required: true },
-    ApplicantsSignature: { type: String, required: true },
-    DatesSigned: { type: Date, required: true },
-    ReceivedBy: { type: String, required: true },
-    ReviewedBy: { type: String, required: true },
-    Title: { type: String, required: true },
-    Dates: { type: Date, required: true },
-    To: { type: String, required: true },
-    Date1: { type: Date, required: true },
-    Telephone: { type: String, required: true },
-    Fax: { type: String, required: true },
-    Name: { type: String, required: true },
-    ApplicantsSignatures: { type: String, required: true },
-    Date2: { type: Date, required: true },
-    WitnessSignature: { type: String, required: true },
-    Date3: { type: Date, required: true },
-    AlcoholTestsResult: { type: Boolean, required: true },
-    AlcoholTestDates: [{ type: Date, required: true }],
-    PositiveControlledSubstancesResult: { type: Boolean, required: true },
-    PositiveControlledSubstancesDates: [{ type: Date, required: true }],
-    RefusalsToBeTested: { type: Boolean, required: true },
-    RefusalDates: [{ type: Date, required: true }],
-    PersonProvidingInfoName: { type: String, required: true },
-    PersonProvidingInfoTitle: { type: String, required: true },
-    PersonProvidingInfoCompany: { type: String, required: true },
-    PersonProvidingInfoDate: { type: Date, required: true },
-    Dear: { type: String, required: true },
-    DriversName: { type: String, required: true },
-    DriversOperatorsLicNo: { type: String, required: true },
-    DriversSocialSecNo: { type: String, required: true },
-    InquiryPersonName: { type: String, required: true },
-    InquiryPersonTitle: { type: String, required: true },
-    MotorCarrierName: { type: String, required: true },
-    MotorCarrierStreet: { type: String, required: true },
-    MotorCarrierCity: { type: String, required: true },
-    MotorCarrierState: { type: String, required: true },
-    MotorCarrierZip: { type: String, required: true }
+    Date: { type: Date, required: false },
+    FirstName: { type: String, required: false },
+    MiddleName: { type: String, required: false },
+    LastName: { type: String, required: false },
+    DateOfBirth: { type: Date, required: false },
+    City: { type: String, required: false },
+    State: { type: String, required: false },
+    Zip: { type: String, required: false },
+    CellularTelephone: { type: String, required: false },
+    SocialSecurityNumber: { type: String, required: false },
+    Address: { type: String, required: false },
+    ApplicantsSignature: { type: String, required: false },
+    DatesSigned: { type: Date, required: false },
+    ReceivedBy: { type: String, required: false },
+    ReviewedBy: { type: String, required: false },
+    Title: { type: String, required: false },
+    Dates: { type: Date, required: false },
+    To: { type: String, required: false },
+    Date1: { type: Date, required: false },
+    Telephone: { type: String, required: false },
+    Fax: { type: String, required: false },
+    Name: { type: String, required: false },
+    ApplicantsSignatures: { type: String, required: false },
+    Date2: { type: Date, required: false },
+    WitnessSignature: { type: String, required: false },
+    Date3: { type: Date, required: false },
+    AlcoholTestsResult: { type: Boolean, required: false },
+    AlcoholTestDates: [{ type: Date, required: false }],
+    PositiveControlledSubstancesResult: { type: Boolean, required: false },
+    PositiveControlledSubstancesDates: [{ type: Date, required: false }],
+    RefusalsToBeTested: { type: Boolean, required: false },
+    RefusalDates: [{ type: Date, required: false }],
+    PersonProvidingInfoName: { type: String, required: false },
+    PersonProvidingInfoTitle: { type: String, required: false },
+    PersonProvidingInfoCompany: { type: String, required: false },
+    PersonProvidingInfoDate: { type: Date, required: false },
+    Dear: { type: String, required: false },
+    DriversName: { type: String, required: false },
+    DriversOperatorsLicNo: { type: String, required: false },
+    DriversSocialSecNo: { type: String, required: false },
+    InquiryPersonName: { type: String, required: false },
+    InquiryPersonTitle: { type: String, required: false },
+    MotorCarrierName: { type: String, required: false },
+    MotorCarrierStreet: { type: String, required: false },
+    MotorCarrierCity: { type: String, required: false },
+    MotorCarrierState: { type: String, required: false },
+    MotorCarrierZip: { type: String, required: false }
 });
 
 const DriverSchema: Schema = new Schema({
-    Dates: { type: Date, required: true },
-    FirstName: { type: String, required: true },
-    MiddleName: { type: String, required: true },
-    LastName: { type: String, required: true },
-    DateOfBirth: { type: Date, required: true },
-    City: { type: String, required: true },
-    State: { type: String, required: true },
-    Zip: { type: String, required: true },
-    CellularTelephone: { type: String, required: true },
-    SocialSecurityNumber: { type: String, required: true },
-    Address: { type: String, required: true },
-    PreviousAddresses: { type: [AddressSchema], required: true },
-    // Licenses: { type: [LicenseSchema], required: true },
-    // Experience: { type: [ExperienceSchema], required: true },
-    // Accidents: { type: [AccidentSchema], required: true },
-    // TrafficViolations: { type: [TrafficViolationSchema], required: true },
+    Dates: { type: Date, required: false },
+    FirstName: { type: String, required: false },
+    MiddleName: { type: String, required: false },
+    LastName: { type: String, required: false },
+    DateOfBirth: { type: Date, required: false },
+    City: { type: String, required: false },
+    State: { type: String, required: false },
+    Zip: { type: String, required: false },
+    CellularTelephone: { type: String, required: false },
+    SocialSecurityNumber: { type: String, required: false },
+    Address: { type: String, required: false },
+    PreviousAddresses: { type: [AddressSchema], required: false },
+    // Licenses: { type: [LicenseSchema], required: false },
+    // Experience: { type: [ExperienceSchema], required: false },
+    // Accidents: { type: [AccidentSchema], required: false },
+    // TrafficViolations: { type: [TrafficViolationSchema], required: false },
     DeniedSuspendedRevoked: {
-        StateOfIssuance: { type: String, required: true },
-        Explanation: { type: String, required: true }
+        StateOfIssuance: { type: String, required: false },
+        Explanation: { type: String, required: false }
     },
-    EmploymentHistory: { type: [EmploymentHistorySchema], required: true },
+    EmploymentHistory: { type: [EmploymentHistorySchema], required: false },
     Certification: {
-        ApplicantsSignature: { type: String, required: true },
-        To: { type: String, required: true },
-        ApplicationReceivedBy: { type: String, required: true },
-        ApplicationReviewedBy: { type: String, required: true },
-        Name: { type: String, required: true },
-        Date: { type: Date, required: true },
-        DateOfHire: { type: Date, required: true },
+        ApplicantsSignature: { type: String, required: false },
+        To: { type: String, required: false },
+        ApplicationReceivedBy: { type: String, required: false },
+        ApplicationReviewedBy: { type: String, required: false },
+        Name: { type: String, required: false },
+        Date: { type: Date, required: false },
+        DateOfHire: { type: Date, required: false },
         PreEmploymentCST: {
-            TimeAndDate: { type: Date, required: true },
-            ResultsReceived: { type: Date, required: true }
+            TimeAndDate: { type: Date, required: false },
+            ResultsReceived: { type: Date, required: false }
         },
-        FirstUsedInSafetySensitivePosition: { type: Date, required: true },
-        TerminationDate: { type: Date, required: true }
+        FirstUsedInSafetySensitivePosition: { type: Date, required: false },
+        TerminationDate: { type: Date, required: false }
     },
-    ControlledSubstanceAndAlcohol: { type: [ControlledSubstanceAndAlcoholSchema], required: true },
+    ControlledSubstanceAndAlcohol: { type: [ControlledSubstanceAndAlcoholSchema], required: false },
     RoadTestExamination: {
-        DriversName: { type: String, required: true },
-        State: { type: String, required: true },
-        Zip: { type: String, required: true },
-        DriversAddress: { type: String, required: true },
+        DriversName: { type: String, required: false },
+        State: { type: String, required: false },
+        Zip: { type: String, required: false },
+        DriversAddress: { type: String, required: false },
         RatingOfPerformance: {
-            PreTripInspection: { type: String, required: true },
-            PlacingEquipmentInOperation: { type: String, required: true },
-            UseOfVehicleControls: { type: String, required: true },
-            OperatingVehicleInTraffic: { type: String, required: true },
-            TurningVehicle: { type: String, required: true },
-            BrakingSlowingVehicle: { type: String, required: true },
-            BackingParkingVehicle: { type: String, required: true },
-            Other: { type: String, required: true },
-            Explain: { type: String, required: true },
-            TypeOfEquipmentUsed: { type: String, required: true }
+            PreTripInspection: { type: String, required: false },
+            PlacingEquipmentInOperation: { type: String, required: false },
+            UseOfVehicleControls: { type: String, required: false },
+            OperatingVehicleInTraffic: { type: String, required: false },
+            TurningVehicle: { type: String, required: false },
+            BrakingSlowingVehicle: { type: String, required: false },
+            BackingParkingVehicle: { type: String, required: false },
+            Other: { type: String, required: false },
+            Explain: { type: String, required: false },
+            TypeOfEquipmentUsed: { type: String, required: false }
         },
-        ApplicantsSignature: { type: String, required: true },
-        DateSigned: { type: Date, required: true }
+        ApplicantsSignature: { type: String, required: false },
+        DateSigned: { type: Date, required: false }
     },
     CertificateOfRoadTest: {
-        DriversName: { type: String, required: true },
-        SocialSecurityNumber: { type: String, required: true },
-        OperatorsLicenseNumber: { type: String, required: true },
-        State: { type: String, required: true },
-        TypeOfPowerUnit: { type: String, required: true },
-        TypeOfTrailer: { type: String, required: true },
-        TypeOfBus: { type: String, required: true }
+        DriversName: { type: String, required: false },
+        SocialSecurityNumber: { type: String, required: false },
+        OperatorsLicenseNumber: { type: String, required: false },
+        State: { type: String, required: false },
+        TypeOfPowerUnit: { type: String, required: false },
+        TypeOfTrailer: { type: String, required: false },
+        TypeOfBus: { type: String, required: false }
     },
     CertificationOfViolations: {
-        Name: { type: String, required: true },
-        Date: { type: Date, required: true },
-        Offense: { type: String, required: true },
-        Location: { type: String, required: true },
-        TypeOfVehicleOperated: { type: String, required: true },
-        DateOfCertification: { type: Date, required: true },
-        DriversSignature: { type: String, required: true }
+        Name: { type: String, required: false },
+        Date: { type: Date, required: false },
+        Offense: { type: String, required: false },
+        Location: { type: String, required: false },
+        TypeOfVehicleOperated: { type: String, required: false },
+        DateOfCertification: { type: Date, required: false },
+        DriversSignature: { type: String, required: false }
     },
     AnnualReviewOfDrivingRecord: {
-        Text: { type: String, required: true },
-        ApplicantsSignature: { type: String, required: true },
-        ReviewDate: { type: Date, required: true },
-        ReviewedBySignature: { type: String, required: true },
-        MotorCarrierAddress: { type: String, required: true }
+        Text: { type: String, required: false },
+        ApplicantsSignature: { type: String, required: false },
+        ReviewDate: { type: Date, required: false },
+        ReviewedBySignature: { type: String, required: false },
+        MotorCarrierAddress: { type: String, required: false }
     },
-    email: { type: String, unique: true, required: true }
+    email: { type: String, unique: true, required: false },
+    token: { type: String, unique: true, required: false },
+    status: { type: Boolean, default: false },
+    approvedBy: { type: String }
 });
 
 const Driver = mongoose.model<IDriver>('DriverApplication', DriverSchema);
