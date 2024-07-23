@@ -4,7 +4,7 @@ import bcrypt from 'bcryptjs'
 // import { config } from '../../config';
 import * as dotenv from "dotenv";
 dotenv.config();
-import { IUser } from './usersModels';  
+import { IUser } from './usersModels';
 import UserModel from './usersModels';
 
 const loginAllUsers = async (req: Request, res: Response) => {
@@ -36,9 +36,9 @@ const loginAllUsers = async (req: Request, res: Response) => {
       process.env.AUTH_SECRET_KEY,
       { expiresIn: '30d' }
     );
-    
-    res.status(200).json({ token, name: user.name, usertype: user.usertype }); 
-    } catch (error) {
+
+    res.status(200).json({ token, name: user.name, usertype: user.usertype });
+  } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Server Error' });
   }
@@ -83,6 +83,61 @@ const registerAllUser = async (req: Request, res: Response) => {
     res.status(500).json({ message: 'Server Error' });
   }
 };
-export { loginAllUsers , registerAllUser };
+
+
+const changePassword = async (req: Request, res: Response) => {
+  const { email, oldPassword, newPassword } = req.body;
+
+  try {
+    const user = (req as any).user;
+
+    if (!user) {
+      return res.status(401).json({ message: 'User not authenticated.' });
+    }
+
+    if (user.email !== email) {
+      return res.status(400).json({ message: 'Provided email does not match authenticated user.' });
+    }
+
+    const isMatch = await bcrypt.compare(oldPassword, user.password);
+
+    if (!isMatch) {
+      return res.status(401).json({ message: 'Old password is incorrect.' });
+    }
+
+    const hashedNewPassword = await bcrypt.hash(newPassword, 10);
+
+    user.password = hashedNewPassword;
+    await user.save();
+
+    res.status(200).json({ message: 'Password changed successfully.' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server Error' });
+  }
+};
+
+const getUsers = async (req: Request, res: Response) => {
+  try {
+    const users = await UserModel.find({ usertype: 'user' });
+
+    res.status(200).json({ users });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server Error' });
+  }
+};
+
+const getAllUsers = async (req: Request, res: Response) => {
+  try {
+    const users = await UserModel.find();
+
+    res.status(200).json({ users });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server Error' });
+  }
+};
+export { loginAllUsers, registerAllUser, changePassword, getUsers, getAllUsers };
 
 

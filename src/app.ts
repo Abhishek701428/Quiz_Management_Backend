@@ -3,9 +3,9 @@ import cors from 'cors';
 import bodyParser from "body-parser";
 import db from './database/db'
 import path from 'path';
+import * as dotenv from "dotenv";
 import usersRoutes from './modules/authUsers/usersRoutes';
 import truckRouter from "./modules/truckList/allRouter/router";
-import * as dotenv from "dotenv";
 import trailerRouter from "./modules/trailerList/trailer-routes";
 import driverRouter from "./modules/driverList/driver-routes";
 import driverapplicationRouter from './modules/driverApplication/driverApplication-routes'
@@ -16,6 +16,7 @@ import licenseRouter from './modules/driverApplicationpart/Licensepart/license-r
 import voilationRouter from './modules/driverApplicationpart/TrafficViolationpart/traffic-routes'
 import customerData from './modules/fileManger/Customer Data/customerdata-routes'
 import files from './modules/fileManger/Files/file-routes'
+import router from './permission/permission-update';
 dotenv.config();
 db();
 const app = express();
@@ -34,7 +35,6 @@ app.use(bodyParser.json());
 app.get('/', (req: Request, res: Response) => {
   res.send(`<h1>Hi, I am Hi Tech Project!</h1>`);
 });
-
 app.use('/api', usersRoutes);
 app.use('/api/truckList', truckRouter);
 app.use('/api/trailerList', trailerRouter)
@@ -48,6 +48,8 @@ app.use('/api/voilation', voilationRouter)
 // File Manager Module
 app.use('/api/customerdata', customerData)
 app.use('/api/file', files)
+//update permissions
+app.use(router)
 
 const PORT = process.env.PORT || 4000;
 app.listen(PORT, () => {

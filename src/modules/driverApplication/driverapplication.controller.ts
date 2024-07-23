@@ -2,14 +2,22 @@ import { Request, Response } from 'express';
 import { Driver } from '../driverApplication/driverApplication-model';
 import jwt,{ JwtPayload } from 'jsonwebtoken';
 import { sendEmail } from '../../middleware/nodeMailermiddleware'
-const jwtSecret = process.env.AUTH_SECRET_KEY
+import * as dotenv from "dotenv";
+dotenv.config();
+const jwtSecret = process.env.AUTH_SECRET_KEY || 'kHv5s2TfP3C6pYsB9vQeThWmZq4t7wzC'
 // Create a new driver
 const createDriver = async (req: Request, res: Response) => {
     try {
         const { email } = req.body;
+        if (!jwtSecret) {
+            return res.status(500).json({ error: 'JWT secret is not defined' });
+        }
         const token = jwt.sign({ email }, jwtSecret, { expiresIn: '7d' });
-        const existingDriver = await Driver.findOne({ email });
 
+        if (!token) {
+            return res.status(500).json({ error: 'Failed to generate token' });
+        }
+        const existingDriver = await Driver.findOne({ email });
         if (existingDriver) {
             return res.status(400).json({ error: 'Email already exists' });
         }
@@ -21,7 +29,7 @@ const createDriver = async (req: Request, res: Response) => {
 
         await newDriver.save();
 
-        const link = `http://your-frontend-url.com/complete-form?token=${token}`;
+        const link = `http://localhost:5173?token=${token}`;
         await sendEmail(email, 'Complete your driver application', `Please complete your driver application by clicking the link: ${link}`);
 
         res.status(200).send('Driver application created and email sent');
