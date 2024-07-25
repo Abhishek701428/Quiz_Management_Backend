@@ -85,31 +85,17 @@ export const getTruckAll = async (req, res) => {
   }
 };
 
-// Get approved trucks
-export const getApprovedTrucks = async (req, res) => {
+export const getTruckbyId = async (req, res) => {
   try {
-    const trucks = await Truck.find({ status: 'APPROVED' });
-    res.json(trucks);
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-};
-
-// Get pending trucks
-export const getPendingTrucks = async (req, res) => {
-  try {
-    const trucks = await Truck.find({ status: 'PENDING' });
-    res.json(trucks);
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-};
-
-// Get cancelled trucks
-export const getCancelledTrucks = async (req, res) => {
-  try {
-    const trucks = await Truck.find({ status: 'EXPIRING' });
-    res.json(trucks);
+    const { id } = req.params;
+    if (!id) {
+      return res.status(400).json({ message: 'Truck ID is required' });
+    }
+    const truck = await Truck.findById(id);
+    if (!truck) {
+      return res.status(404).json({ message: 'Truck not found' });
+    }
+    res.json(truck);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

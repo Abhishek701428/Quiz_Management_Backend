@@ -1,6 +1,6 @@
 import express from 'express';
 // import { createDriver, updateDriver, getAllDrivers, deleteDriver } from '../driverApplication/driverApplication-controller';
-import { createDriver, updateDriver, getAllDrivers, deleteDriver, completeDriverForm, approveDriver } from '../driverApplication/driverapplication.controller';
+import { createDriver, updateDriver, getAllDrivers, deleteDriver, completeDriverForm, approveDriver, getDrivebyId } from '../driverApplication/driverapplication.controller';
 import { authenticateSuperAdminAndAdmin } from '../../middleware/authMiddleware';
 import checkPermissions from '../../middleware/permission-middleware';
 import { authenticateUser } from '../../middleware/permission-authenticate';
@@ -11,6 +11,8 @@ router.post('/create',authenticateUser, checkPermissions('truckList', 'create'),
 
 // Route to get all drivers
 router.get('/getAll',authenticateUser, checkPermissions('truckList', 'read'), getAllDrivers);
+
+router.get('/get/:id',authenticateUser, checkPermissions('truckList', 'read'), getDrivebyId);
 
 // Route to update a driver by ID with files
 router.put('/update/:id', authenticateUser, checkPermissions('truckList', 'update'), updateDriver);

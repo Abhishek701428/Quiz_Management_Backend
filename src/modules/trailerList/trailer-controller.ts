@@ -85,3 +85,19 @@ export const getTrailerAll = async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 };
+
+export const getTrailerbyId = async (req, res) => {
+    try {
+      const { id } = req.params;
+      if (!id) {
+        return res.status(400).json({ message: 'Trailer ID is required' });
+      }
+      const trailer = await Trailer.findById(id);
+      if (!trailer) {
+        return res.status(404).json({ message: 'Trailer not found' });
+      }
+      res.json(trailer);
+    } catch (error) {
+      res.status(500).json({ message: error.message });
+    }
+  };

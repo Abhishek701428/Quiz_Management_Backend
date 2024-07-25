@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { Driver } from '../driverApplication/driverApplication-model';
-import jwt,{ JwtPayload } from 'jsonwebtoken';
+import jwt, { JwtPayload } from 'jsonwebtoken';
 import { sendEmail } from '../../middleware/nodeMailermiddleware'
 import * as dotenv from "dotenv";
 dotenv.config();
@@ -112,5 +112,20 @@ const deleteDriver = async (req: Request, res: Response) => {
         res.status(500).json({ error: error.message });
     }
 };
+const getDrivebyId = async (req, res) => {
+    try {
+        const { id } = req.params;
+        if (!id) {
+            return res.status(400).json({ message: 'Trailer ID is required' });
+        }
+        const driver = await Driver.findById(id);
+        if (!driver) {
+            return res.status(404).json({ message: 'Trailer not found' });
+        }
+        res.json(driver);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
 
-export { createDriver, getAllDrivers, updateDriver, deleteDriver };
+export { createDriver, getAllDrivers, updateDriver, deleteDriver, getDrivebyId };

@@ -4,15 +4,13 @@ const router = Router();
 import * as truckController from '../truckList/truck.controller';
 import { authenticateSuperAdminAndAdmin ,} from '../../../middleware/authMiddleware';
 import { authenticateUser } from '../../../middleware/permission-authenticate';
-import Truck from '../truckList/truck.models';
 import { cloudinaryMiddleware } from '../../../middleware/cloudinaryMiddleware';
 import checkPermissions from '../../../middleware/permission-middleware';
 //truck routes
 router.post('/truck/create',authenticateUser, checkPermissions('truckList', 'create'), truckController.createTruck);
 router.get('/truck/getAll', cloudinaryMiddleware,authenticateUser, checkPermissions('truckList', 'read'),truckController.getTruckAll);
-router.get('/truck/approved',cloudinaryMiddleware,authenticateUser,  truckController.getApprovedTrucks);
-router.get('/truck/pending',cloudinaryMiddleware,authenticateUser,  truckController.getPendingTrucks);
-router.get('/truck/cancelled',cloudinaryMiddleware,authenticateUser,  truckController.getCancelledTrucks);
+router.get('/truck/get/:id', cloudinaryMiddleware,authenticateUser, checkPermissions('truckList', 'read'),truckController.getTruckbyId);
+
 
 
 //ACCORDING ADMIN GET AND CREATE 

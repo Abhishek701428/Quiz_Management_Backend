@@ -81,3 +81,20 @@ export const getAllDrivers = async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 };
+
+
+export const getDriverbyId = async (req, res) => {
+    try {
+      const { id } = req.params;
+      if (!id) {
+        return res.status(400).json({ message: 'Trailer ID is required' });
+      }
+      const driver = await Driver.findById(id);
+      if (!driver) {
+        return res.status(404).json({ message: 'Trailer not found' });
+      }
+      res.json(driver);
+    } catch (error) {
+      res.status(500).json({ message: error.message });
+    }
+  };

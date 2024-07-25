@@ -9,6 +9,7 @@ import { authenticateUser } from '../../middleware/permission-authenticate';
 //truck routes
 router.post('/driver/create',authenticateUser, checkPermissions('truckList', 'create'), driverController.createDriver);
 router.get('/driver/getAll', cloudinaryMiddleware,authenticateUser, checkPermissions('truckList', 'read'), driverController.getAllDrivers);
+router.get('/driver/get/:id', cloudinaryMiddleware,authenticateUser, checkPermissions('truckList', 'read'), driverController.getDriverbyId);
 
 //ACCORDING ADMIN GET AND CREATE 
 
