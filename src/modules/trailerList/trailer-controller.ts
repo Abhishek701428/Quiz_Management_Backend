@@ -1,43 +1,51 @@
+import { Request, Response } from 'express';
 import { cloudinaryMiddleware } from '../../middleware/cloudinaryMiddleware';
 import Trailer from '../trailerList/trailer-model';
 
 // Create a trailer
-export const createTrailer = async (req, res) => {
+export const createTrailer = async (req: Request, res: Response) => {
     try {
-        // Use cloudinaryMiddleware here to handle file uploads
-        cloudinaryMiddleware(req, res, async function (err) {
+        cloudinaryMiddleware(req, res, async function (err: any) {
             if (err) {
-                console.error(err);
+                console.error('File upload error:', err);
                 return res.status(400).json({ message: "File upload failed" });
             }
 
-            const trailerData = req.body;
+            const trailerData = { ...req.body };
 
             // Handle file uploads from req.cloudinaryUrls
-            if (req.cloudinaryUrls) {
-                trailerData.uploadDocument = req.cloudinaryUrls['uploadDocument'];
-                trailerData.uploadDocument1 = req.cloudinaryUrls['uploadDocument1'];
-                trailerData.uploadDocument2 = req.cloudinaryUrls['uploadDocument2'];
-                trailerData.uploadDocument3 = req.cloudinaryUrls['uploadDocument3'];
+            const cloudinaryUrls = (req as any).cloudinaryUrls;
+            if (cloudinaryUrls) {
+                trailerData.uploadDocument = cloudinaryUrls['uploadDocument'] || trailerData.uploadDocument;
+                trailerData.uploadDocument1 = cloudinaryUrls['uploadDocument1'] || trailerData.uploadDocument1;
+                trailerData.uploadDocument2 = cloudinaryUrls['uploadDocument2'] || trailerData.uploadDocument2;
+                trailerData.uploadDocument3 = cloudinaryUrls['uploadDocument3'] || trailerData.uploadDocument3;
             }
 
             const trailer = new Trailer(trailerData);
-            await trailer.save();
-            res.status(201).json(trailer);
+
+            try {
+                await trailer.validate();
+                await trailer.save();
+                res.status(201).json(trailer);
+            } catch (validationError) {
+                res.status(400).json({ message: validationError.message });
+            }
         });
     } catch (error) {
-        res.status(400).json({ message: error.message });
+        console.error('Error in createTrailer:', error);
+        res.status(500).json({ message: 'Internal server error' });
     }
 };
 
 // Update a trailer
-export const updateTrailer = async (req, res) => {
+export const updateTrailer = async (req: Request, res: Response) => {
     try {
         const { id } = req.params;
 
-        cloudinaryMiddleware(req, res, async function (err) {
+        cloudinaryMiddleware(req, res, async function (err: any) {
             if (err) {
-                console.error(err);
+                console.error('File upload error:', err);
                 return res.status(400).json({ message: "File upload failed" });
             }
 
@@ -47,23 +55,31 @@ export const updateTrailer = async (req, res) => {
                 return res.status(404).json({ message: "Trailer not found" });
             }
 
-            trailer.set(req.body);
+            const trailerData = { ...req.body };
 
-            if (req.cloudinaryUrls) {
-                trailer.uploadDocument = req.cloudinaryUrls['uploadDocument'];
-                trailer.uploadDocument1 = req.cloudinaryUrls['uploadDocument1'];
-                trailer.uploadDocument2 = req.cloudinaryUrls['uploadDocument2'];
-                trailer.uploadDocument3 = req.cloudinaryUrls['uploadDocument3'];
+            // Handle file uploads from req.cloudinaryUrls
+            const cloudinaryUrls = (req as any).cloudinaryUrls;
+            if (cloudinaryUrls) {
+                trailerData.uploadDocument = cloudinaryUrls['uploadDocument'] || trailer.uploadDocument;
+                trailerData.uploadDocument1 = cloudinaryUrls['uploadDocument1'] || trailer.uploadDocument1;
+                trailerData.uploadDocument2 = cloudinaryUrls['uploadDocument2'] || trailer.uploadDocument2;
+                trailerData.uploadDocument3 = cloudinaryUrls['uploadDocument3'] || trailer.uploadDocument3;
             }
 
-            await trailer.save();
-            res.status(200).json(trailer);
+            trailer.set(trailerData);
+
+            try {
+                await trailer.save();
+                res.status(200).json(trailer);
+            } catch (validationError) {
+                res.status(400).json({ message: validationError.message });
+            }
         });
     } catch (error) {
-        res.status(400).json({ message: error.message });
+        console.error('Error in updateTrailer:', error);
+        res.status(500).json({ message: 'Internal server error' });
     }
 };
-
 // Delete a truck
 export const deleteTrailer = async (req, res) => {
     try {
@@ -88,16 +104,16 @@ export const getTrailerAll = async (req, res) => {
 
 export const getTrailerbyId = async (req, res) => {
     try {
-      const { id } = req.params;
-      if (!id) {
-        return res.status(400).json({ message: 'Trailer ID is required' });
-      }
-      const trailer = await Trailer.findById(id);
-      if (!trailer) {
-        return res.status(404).json({ message: 'Trailer not found' });
-      }
-      res.json(trailer);
+        const { id } = req.params;
+        if (!id) {
+            return res.status(400).json({ message: 'Trailer ID is required' });
+        }
+        const trailer = await Trailer.findById(id);
+        if (!trailer) {
+            return res.status(404).json({ message: 'Trailer not found' });
+        }
+        res.json(trailer);
     } catch (error) {
-      res.status(500).json({ message: error.message });
+        res.status(500).json({ message: error.message });
     }
-  };
+};

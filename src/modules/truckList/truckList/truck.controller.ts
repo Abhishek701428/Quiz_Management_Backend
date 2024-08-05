@@ -1,44 +1,64 @@
+import { Request, Response } from 'express';
 import { cloudinaryMiddleware } from '../../../middleware/cloudinaryMiddleware';
 import Truck from '../truckList/truck.models';
 
 // Create a truck
-export const createTruck = async (req, res) => {
+export const createTruck = async (req: Request, res: Response) => {
   try {
-    // Use cloudinaryMiddleware here to handle file uploads
-    cloudinaryMiddleware(req, res, async function (err) {
+    cloudinaryMiddleware(req, res, async function (err: any) {
       if (err) {
-        console.error(err);
+        console.error('File upload error:', err);
         return res.status(400).json({ message: "File upload failed" });
       }
 
-      const truckData = req.body;
+      const truckData = { ...req.body };
 
-      // Handle file uploads from req.cloudinaryUrls
-      if (req.cloudinaryUrls) {
-        truckData.uploadDocument = req.cloudinaryUrls['uploadDocument'];
-        truckData.uploadDocument1 = req.cloudinaryUrls['uploadDocument1'];
-        truckData.uploadDocument2 = req.cloudinaryUrls['uploadDocument2'];
-        truckData.uploadDocument3 = req.cloudinaryUrls['uploadDocument3'];
+      const cloudinaryUrls = (req as any).cloudinaryUrls;
+
+      // Handle file uploads
+      if (cloudinaryUrls) {
+        truckData.uploadDocument = cloudinaryUrls['uploadDocument'] || truckData.uploadDocument;
+        truckData.uploadDocument1 = cloudinaryUrls['uploadDocument1'] || truckData.uploadDocument1;
+        truckData.uploadDocument2 = cloudinaryUrls['uploadDocument2'] || truckData.uploadDocument2;
+        truckData.uploadDocument3 = cloudinaryUrls['uploadDocument3'] || truckData.uploadDocument3;
       }
 
       const truck = new Truck(truckData);
-      await truck.save();
-      res.status(201).json(truck);
+
+      try {
+        await truck.validate();
+        await truck.save();
+        res.status(201).json(truck);
+      } catch (validationError) {
+        res.status(400).json({ message: validationError.message });
+      }
     });
   } catch (error) {
-    res.status(400).json({ message: error.message });
+    console.error('Error in createTruck:', error);
+    res.status(500).json({ message: 'Internal server error' });
   }
 };
 
-// Update a truck
-export const updateTruck = async (req, res) => {
+//update Truck
+export const updateTruck = async (req: Request, res: Response) => {
   try {
-    const { id } = req.params;
-
-    cloudinaryMiddleware(req, res, async function (err) {
+    cloudinaryMiddleware(req, res, async function (err: any) {
       if (err) {
-        console.error(err);
+        console.error('File upload error:', err);
         return res.status(400).json({ message: "File upload failed" });
+      }
+
+      const { id } = req.params;
+      const truckData = { ...req.body };
+
+      const cloudinaryUrls = (req as any).cloudinaryUrls;
+
+      // Handle file uploads
+      if (cloudinaryUrls) {
+        truckData.uploadDocument = cloudinaryUrls['uploadDocument'] || truckData.uploadDocument;
+        truckData.uploadDocument1 = cloudinaryUrls['uploadDocument1'] || truckData.uploadDocument1;
+        truckData.uploadDocument2 = cloudinaryUrls['uploadDocument2'] || truckData.uploadDocument2;
+        truckData.uploadDocument3 = cloudinaryUrls['uploadDocument3'] || truckData.uploadDocument3;
       }
 
       const truck = await Truck.findById(id);
@@ -47,45 +67,49 @@ export const updateTruck = async (req, res) => {
         return res.status(404).json({ message: "Truck not found" });
       }
 
-      truck.set(req.body);
+      truck.set(truckData);
 
-      if (req.cloudinaryUrls) {
-        truck.uploadDocument = req.cloudinaryUrls['uploadDocument'];
-        truck.uploadDocument1 = req.cloudinaryUrls['uploadDocument1'];
-        truck.uploadDocument2 = req.cloudinaryUrls['uploadDocument2'];
-        truck.uploadDocument3 = req.cloudinaryUrls['uploadDocument3'];
+      try {
+        await truck.save();
+        res.status(200).json(truck);
+      } catch (validationError) {
+        res.status(400).json({ message: validationError.message });
       }
-
-      await truck.save();
-      res.status(200).json(truck);
     });
   } catch (error) {
-    res.status(400).json({ message: error.message });
+    console.error('Error in updateTruck:', error);
+    res.status(500).json({ message: 'Internal server error' });
   }
 };
 
 // Delete a truck
-export const deleteTruck = async (req, res) => {
+export const deleteTruck = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
-    await Truck.findByIdAndDelete(id);
+    const result = await Truck.findByIdAndDelete(id);
+    if (!result) {
+      return res.status(404).json({ message: 'Truck not found' });
+    }
     res.json({ message: 'Truck deleted successfully' });
   } catch (error) {
-    res.status(400).json({ message: error.message });
+    console.error('Error in deleteTruck:', error);
+    res.status(500).json({ message: 'Internal server error' });
   }
 };
 
 // Get all trucks
-export const getTruckAll = async (req, res) => {
+export const getTruckAll = async (req: Request, res: Response) => {
   try {
     const trucks = await Truck.find();
     res.json(trucks);
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    console.error('Error in getTruckAll:', error);
+    res.status(500).json({ message: 'Internal server error' });
   }
 };
 
-export const getTruckbyId = async (req, res) => {
+// Get a truck by ID
+export const getTruckbyId = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     if (!id) {
@@ -97,6 +121,7 @@ export const getTruckbyId = async (req, res) => {
     }
     res.json(truck);
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    console.error('Error in getTruckbyId:', error);
+    res.status(500).json({ message: 'Internal server error' });
   }
 };

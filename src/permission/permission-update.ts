@@ -10,7 +10,7 @@ router.use(authenticateUser);
 
 router.put('/update-permissions/:userId', checkPermissions('permissions', 'update'), async (req, res) => {
     const { userId } = req.params;
-    const { permissions } = req.body; 
+    const { permissions } = req.body;
 
     try {
         const user = await UserModel.findById(userId);
@@ -28,12 +28,18 @@ router.put('/update-permissions/:userId', checkPermissions('permissions', 'updat
         }
 
         user.permissions = permissions;
-        await user.save();
+        // await user.save();
+        try {
+            await user.validate();
+            await user.save();
+            return res.status(200).json({ message: 'Permissions updated successfully' });
+        } catch (validationError) {
+            res.status(400).json({ message: validationError.message });
+        }
 
-        return res.status(200).json({ message: 'Permissions updated successfully' });
     } catch (error) {
         return res.status(500).json({ message: 'Server error', error });
     }
-});
+})
 
 export default router;

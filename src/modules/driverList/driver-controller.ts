@@ -20,8 +20,15 @@ export const createDriver = async (req, res) => {
             }
 
             const driver = new Driver(driverData);
-            await driver.save();
-            res.status(201).json(driver);
+
+            try {
+                await driver.validate();
+                await driver.save();
+                res.status(201).json(driver);
+            } catch (validationError) {
+                res.status(400).json({ message: validationError.message });
+            }
+
         });
     } catch (error) {
         res.status(400).json({ message: error.message });
@@ -53,8 +60,13 @@ export const updateDriver = async (req, res) => {
                 });
             }
 
-            await driver.save();
-            res.status(200).json(driver);
+            // await driver.save();
+            try {
+                await driver.save();
+                res.status(201).json(driver);
+            } catch (validationError) {
+                res.status(400).json({ message: validationError.message });
+            }
         });
     } catch (error) {
         res.status(400).json({ message: error.message });
@@ -85,16 +97,16 @@ export const getAllDrivers = async (req, res) => {
 
 export const getDriverbyId = async (req, res) => {
     try {
-      const { id } = req.params;
-      if (!id) {
-        return res.status(400).json({ message: 'Trailer ID is required' });
-      }
-      const driver = await Driver.findById(id);
-      if (!driver) {
-        return res.status(404).json({ message: 'Trailer not found' });
-      }
-      res.json(driver);
+        const { id } = req.params;
+        if (!id) {
+            return res.status(400).json({ message: 'Trailer ID is required' });
+        }
+        const driver = await Driver.findById(id);
+        if (!driver) {
+            return res.status(404).json({ message: 'Trailer not found' });
+        }
+        res.json(driver);
     } catch (error) {
-      res.status(500).json({ message: error.message });
+        res.status(500).json({ message: error.message });
     }
-  };
+};

@@ -12,7 +12,7 @@ router.get('/getAll', Files.getAllCompanies);
 // router.post('/driver/create',authenticateSuperAdminAndAdmin, driverController.createDriver);
 // router.get('/driver/getAll',authenticateSuperAdminAndAdmin, driverController.getAllDrivers);
 
-router.put('/update/:id', authenticateSuperAdminAndAdmin, Files.updateCompanyStatus);
+router.put('/update/:id', authenticateSuperAdminAndAdmin, Files.updateCompany);
 router.delete('/delete/:id', authenticateSuperAdminAndAdmin, Files.deleteCompany);
 
 export default router;

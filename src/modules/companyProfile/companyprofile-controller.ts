@@ -1,88 +1,69 @@
 import { Request, Response } from 'express';
-import multer from 'multer';
-import fs from 'fs';
 import Company from '../companyProfile/companyprofile-model';
-const storage = multer.diskStorage({
-    destination: function (req, file, callback) {
-        const uploadPath = 'uploads';
-        if (!fs.existsSync(uploadPath)) {
-            fs.mkdirSync(uploadPath, { recursive: true });
-        }
-        callback(null, uploadPath);
-    },
-    filename: function (req, file, callback) {
-        callback(null, file.originalname);
-    }
-});
-
-// Define file filter function
-const fileFilter = function (req, file, callback) {
-    const allowedMimes = ['application/pdf', 'image/jpeg', 'image/jpg', 'image/png'];
-    if (allowedMimes.includes(file.mimetype)) {
-        callback(null, true);
-    } else {
-        callback(new Error('Invalid file type. Only PDF, JPG, JPEG, and PNG files are allowed.'));
-    }
-};
-
-// Multer upload middleware configuration with storage and file filter
-const upload = multer({
-    storage: storage,
-    fileFilter: fileFilter
-}).any();
+import { cloudinaryMiddleware } from '../../middleware/cloudinaryMiddleware';
 
 export const createCompany = async (req: Request, res: Response) => {
     try {
-        upload(req, res, async function (err) {
+        cloudinaryMiddleware(req, res, async function (err: any) {
             if (err) {
-                console.error(err);
+                console.error('File upload error:', err);
                 return res.status(400).json({ message: "File upload failed" });
             }
 
-            const companyData = req.body;
+            const companyData = { ...req.body };
 
-            // Handle file uploads
-            if (req.files && Array.isArray(req.files) && req.files.length > 0) {
-                req.files.forEach(file => {
-                    if (file.fieldname === 'uploadDocument') {
-                        companyData.uploadDocument = file.filename;
-                    } else if (file.fieldname === 'kyuUploadDocument') {
-                        companyData.kyuUploadDocument = file.filename;
-                    } else if (file.fieldname === 'nyUploadDocument') {
-                        companyData.nyUploadDocument = file.filename;
-                    } else if (file.fieldname === 'w9UploadDocument') {
-                        companyData.w9UploadDocument = file.filename;
-                    } else if (file.fieldname === 'insuranceDocument') {
-                        companyData.insuranceDocument = file.filename;
-                    } else if (file.fieldname === 'registrationUploadDocument') {
-                        companyData.registrationUploadDocument = file.filename;
-                    } else if (file.fieldname === 'trailerUploadDocument') {
-                        companyData.trailerUploadDocument = file.filename;
-                    } else if (file.fieldname === 'randomDtUploadDocument') {
-                        companyData.randomDtUploadDocument = file.filename;
-                    }
-                });
+            const cloudinaryUrls = (req as any).cloudinaryUrls;
+
+            if (cloudinaryUrls) {
+                companyData.uploadDocument = cloudinaryUrls['uploadDocument'] || companyData.uploadDocument;
+                companyData.kyuUploadDocument = cloudinaryUrls['kyuUploadDocument'] || companyData.kyuUploadDocument;
+                companyData.nyUploadDocument = cloudinaryUrls['nyUploadDocument'] || companyData.nyUploadDocument;
+                companyData.w9UploadDocument = cloudinaryUrls['w9UploadDocument'] || companyData.w9UploadDocument;
+                companyData.insuranceDocument = cloudinaryUrls['insuranceDocument'] || companyData.insuranceDocument;
+                companyData.registrationUploadDocument = cloudinaryUrls['registrationUploadDocument'] || companyData.registrationUploadDocument;
+                companyData.trailerUploadDocument = cloudinaryUrls['trailerUploadDocument'] || companyData.trailerUploadDocument;
+                companyData.randomDtUploadDocument = cloudinaryUrls['randomDtUploadDocument'] || companyData.randomDtUploadDocument;
             }
 
             const company = new Company(companyData);
 
-            await company.save();
-            res.status(201).json(company);
+            try {
+                await company.validate();
+                await company.save();
+                res.status(201).json(company);
+            } catch (validationError) {
+                res.status(400).json({ message: validationError.message });
+            }
         });
     } catch (error) {
-        res.status(400).json({ message: error.message });
+        console.error('Error in createCompany:', error);
+        res.status(500).json({ message: 'Internal server error' });
     }
 };
 
 
 export const updateCompany = async (req: Request, res: Response) => {
     try {
-        const { id } = req.params;
-
-        upload(req, res, async function (err) {
+        cloudinaryMiddleware(req, res, async function (err: any) {
             if (err) {
-                console.error(err);
+                console.error('File upload error:', err);
                 return res.status(400).json({ message: "File upload failed" });
+            }
+
+            const { id } = req.params;
+            const companyData = { ...req.body };
+
+            const cloudinaryUrls = (req as any).cloudinaryUrls;
+
+            if (cloudinaryUrls) {
+                companyData.uploadDocument = cloudinaryUrls['uploadDocument'] || companyData.uploadDocument;
+                companyData.kyuUploadDocument = cloudinaryUrls['kyuUploadDocument'] || companyData.kyuUploadDocument;
+                companyData.nyUploadDocument = cloudinaryUrls['nyUploadDocument'] || companyData.nyUploadDocument;
+                companyData.w9UploadDocument = cloudinaryUrls['w9UploadDocument'] || companyData.w9UploadDocument;
+                companyData.insuranceDocument = cloudinaryUrls['insuranceDocument'] || companyData.insuranceDocument;
+                companyData.registrationUploadDocument = cloudinaryUrls['registrationUploadDocument'] || companyData.registrationUploadDocument;
+                companyData.trailerUploadDocument = cloudinaryUrls['trailerUploadDocument'] || companyData.trailerUploadDocument;
+                companyData.randomDtUploadDocument = cloudinaryUrls['randomDtUploadDocument'] || companyData.randomDtUploadDocument;
             }
 
             const company = await Company.findById(id);
@@ -91,36 +72,18 @@ export const updateCompany = async (req: Request, res: Response) => {
                 return res.status(404).json({ message: "Company not found" });
             }
 
-            company.set(req.body);
+            company.set(companyData);
 
-            // Handle file uploads
-            if (req.files && Array.isArray(req.files) && req.files.length > 0) {
-                req.files.forEach(file => {
-                    if (file.fieldname === 'uploadDocument') {
-                        company.uploadDocument = file.filename;
-                    } else if (file.fieldname === 'kyuUploadDocument') {
-                        company.kyuUploadDocument = file.filename;
-                    } else if (file.fieldname === 'nyUploadDocument') {
-                        company.nyUploadDocument = file.filename;
-                    } else if (file.fieldname === 'w9UploadDocument') {
-                        company.w9UploadDocument = file.filename;
-                    } else if (file.fieldname === 'insuranceDocument') {
-                        company.insuranceDocument = file.filename;
-                    } else if (file.fieldname === 'registrationUploadDocument') {
-                        company.registrationUploadDocument = file.filename;
-                    } else if (file.fieldname === 'trailerUploadDocument') {
-                        company.trailerUploadDocument = file.filename;
-                    } else if (file.fieldname === 'randomDtUploadDocument') {
-                        company.randomDtUploadDocument = file.filename;
-                    }
-                });
+            try {
+                await company.save();
+                res.status(200).json(company);
+            } catch (validationError) {
+                res.status(400).json({ message: validationError.message });
             }
-
-            await company.save();
-            res.status(200).json(company);
         });
     } catch (error) {
-        res.status(400).json({ message: error.message });
+        console.error('Error in updateCompany:', error);
+        res.status(500).json({ message: 'Internal server error' });
     }
 };
 
@@ -145,5 +108,26 @@ export const getAllCompanies = async (req: Request, res: Response) => {
         res.status(200).json(companies);
     } catch (error) {
         res.status(400).json({ message: error.message });
+    }
+};
+
+export const getCompanyById = async (req: Request, res: Response) => {
+    try {
+        const { id } = req.params;
+
+        if (!id) {
+            return res.status(400).json({ message: 'Company ID is required' });
+        }
+
+        const company = await Company.findById(id);
+
+        if (!company) {
+            return res.status(404).json({ message: 'Company not found' });
+        }
+
+        res.status(200).json(company);
+    } catch (error) {
+        console.error('Error in getCompanyById:', error);
+        res.status(500).json({ message: 'Internal server error' });
     }
 };

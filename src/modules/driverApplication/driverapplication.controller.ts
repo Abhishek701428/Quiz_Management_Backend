@@ -27,7 +27,14 @@ const createDriver = async (req: Request, res: Response) => {
             status: false
         });
 
-        await newDriver.save();
+        // await newDriver.save();
+        try {
+            await newDriver.validate();
+            await newDriver.save();
+            // res.status(201).json(newDriver);
+        } catch (validationError) {
+            res.status(400).json({ message: validationError.message });
+        }
 
         const link = `http://localhost:5173?token=${token}`;
         await sendEmail(email, 'Complete your driver application', `Please complete your driver application by clicking the link: ${link}`);
@@ -49,9 +56,15 @@ export const completeDriverForm = async (req: Request, res: Response) => {
         }
 
         driver.set(formData);
-        await driver.save();
+        // await driver.save();
+        try {
+            await driver.validate();
+            await driver.save();
+            res.status(200).send('Driver application completed');
+        } catch (validationError) {
+            res.status(400).json({ message: validationError.message });
+        }
 
-        res.status(200).send('Driver application completed');
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
@@ -68,9 +81,16 @@ export const approveDriver = async (req, res) => {
 
         driver.status = true;
         driver.approvedBy = approverId;
-        await driver.save();
+        //  await driver.save();
+        try {
+            await driver.validate();
+            await driver.save();
+            res.status(200).send('Driver approved');
+        } catch (validationError) {
+            res.status(400).json({ message: validationError.message });
+        }
 
-        res.status(200).send('Driver approved');
+
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
@@ -86,15 +106,31 @@ const getAllDrivers = async (req: Request, res: Response) => {
     }
 };
 
-
-// Update a driver by ID
+// Update Driver
 const updateDriver = async (req: Request, res: Response) => {
     try {
-        const driver = await Driver.findByIdAndUpdate(req.params.id, req.body, { new: true });
+        const { id } = req.params;
+        const updateData = req.body;
+
+        if (!id) {
+            return res.status(400).json({ error: 'Driver ID is required' });
+        }
+
+        const driver = await Driver.findById(id);
         if (!driver) {
             return res.status(404).json({ error: 'Driver not found' });
         }
-        res.status(200).json(driver);
+
+        driver.set(updateData);
+
+        try {
+            await driver.validate();
+            const updatedDriver = await driver.save();
+            res.status(200).json(updatedDriver);
+        } catch (validationError) {
+            res.status(400).json({ message: validationError.message });
+        }
+
     } catch (error) {
         res.status(500).json({ error: error.message });
     }

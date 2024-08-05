@@ -1,7 +1,6 @@
 import { Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs'
-// import { config } from '../../config';
 import * as dotenv from "dotenv";
 dotenv.config();
 import { IUser } from './usersModels';
@@ -10,6 +9,13 @@ import UserModel from './usersModels';
 const loginAllUsers = async (req: Request, res: Response) => {
   const { email, password } = req.body;
 
+  if (!email || typeof email !== 'string' || !/^[\w-.]+@([\w-]+\.)+[a-zA-Z]{2,7}$/.test(email)) {
+    return res.status(400).json({ message: 'Valid email is required.' });
+  }
+
+  if (!password || typeof password !== 'string' || password.length < 2) {
+    return res.status(400).json({ message: 'Password is required and must be at least 2 characters long.' });
+  }
   try {
     const user = await UserModel.findOne({ email });
 
@@ -75,10 +81,18 @@ const registerAllUser = async (req: Request, res: Response) => {
 
     // Create a new user or admin by the admin or superadmin with the hashed password
     const newUserOrAdmin = new UserModel({ name, email, password: hashedPassword, usertype });
-    await newUserOrAdmin.save();
 
-    res.status(201).json({ message: 'User or Admin created successfully', newUserOrAdmin });
-  } catch (error) {
+    try {
+      await newUserOrAdmin.validate();
+      await newUserOrAdmin.save();
+
+      res.status(201).json({ message: 'User or Admin created successfully', newUserOrAdmin });
+    }
+    catch (validationError) {
+      res.status(400).json({ message: validationError.message });
+    }
+  }
+  catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Server Error' });
   }
@@ -87,6 +101,18 @@ const registerAllUser = async (req: Request, res: Response) => {
 
 const changePassword = async (req: Request, res: Response) => {
   const { email, oldPassword, newPassword } = req.body;
+  
+  if (!email || typeof email !== 'string' || !/^[\w-.]+@([\w-]+\.)+[a-zA-Z]{2,7}$/.test(email)) {
+    return res.status(400).json({ message: 'Valid email is required.' });
+  }
+
+  if (!oldPassword || typeof oldPassword !== 'string' || oldPassword.length < 2) {
+    return res.status(400).json({ message: 'Old password is required and must be at least 2 characters long.' });
+  }
+
+  if (!newPassword || typeof newPassword !== 'string' || newPassword.length < 2) {
+    return res.status(400).json({ message: 'New password is required and must be at least 2 characters long.' });
+  }
 
   try {
     const user = (req as any).user;
@@ -123,6 +149,9 @@ const getUsers = async (req: Request, res: Response) => {
 
     res.status(200).json({ users });
   } catch (error) {
+    if (error instanceof Error) {
+      res.status(500).json({ message: error.message });
+    }
     console.error(error);
     res.status(500).json({ message: 'Server Error' });
   }
@@ -134,6 +163,9 @@ const getAllUsers = async (req: Request, res: Response) => {
 
     res.status(200).json({ users });
   } catch (error) {
+    if (error instanceof Error) {
+      res.status(500).json({ message: error.message });
+    }
     console.error(error);
     res.status(500).json({ message: 'Server Error' });
   }
