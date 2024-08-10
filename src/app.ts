@@ -10,6 +10,7 @@ import trailerRouter from "./modules/trailerList/trailer-routes";
 import driverRouter from "./modules/driverList/driver-routes";
 import driverapplicationRouter from './modules/driverApplication/driverApplication-routes'
 import companyRouter from './modules/companyProfile/companyprofile-routes'
+import companyCarrierRouter from './modules/companyCreate/company-routes'
 import accidentRouter from './modules/driverApplicationpart/Accidentpart/accident-routes'
 import experinceRouter from './modules/driverApplicationpart/Experiencepart/experience-routes'
 import licenseRouter from './modules/driverApplicationpart/Licensepart/license-routes'
@@ -41,6 +42,7 @@ app.use('/api/trailerList', trailerRouter)
 app.use('/api/driverList', driverRouter)
 app.use('/api/driverapplication', driverapplicationRouter)
 app.use('/api/company', companyRouter)
+app.use('/api/companycarrier', companyCarrierRouter)
 app.use('/api/accident', accidentRouter)
 app.use('/api/experince', experinceRouter)
 app.use('/api/license', licenseRouter)

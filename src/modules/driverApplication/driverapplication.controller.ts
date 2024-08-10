@@ -45,22 +45,75 @@ const createDriver = async (req: Request, res: Response) => {
     }
 };
 
+// export const completeDriverForm = async (req: Request, res: Response) => {
+//     try {
+//         const { token, ...formData } = req.body;
+//         const decoded: JwtPayload = jwt.verify(token, jwtSecret) as JwtPayload;
+//         const driver = await Driver.findOne({ email: decoded.email });
+
+//         if (!driver) {
+//             return res.status(400).json({ error: 'Invalid token or driver not found' });
+//         }
+
+//         driver.set(formData);
+//         // await driver.save();
+//         try {
+//             await driver.validate();
+//             await driver.save();
+//             res.status(200).send('Driver application completed');
+//         } catch (validationError) {
+//             res.status(400).json({ message: validationError.message });
+//         }
+
+//     } catch (error) {
+//         res.status(500).json({ error: error.message });
+//     }
+// };
+
 export const completeDriverForm = async (req: Request, res: Response) => {
     try {
-        const { token, ...formData } = req.body;
-        const decoded: JwtPayload = jwt.verify(token, jwtSecret) as JwtPayload;
-        const driver = await Driver.findOne({ email: decoded.email });
+        const { email, token, ...formData } = req.body;
 
-        if (!driver) {
-            return res.status(400).json({ error: 'Invalid token or driver not found' });
+        if (!jwtSecret) {
+            return res.status(500).json({ error: 'JWT secret is not defined' });
         }
 
-        driver.set(formData);
-        // await driver.save();
+        let driver;
+        if (token) {
+            try {
+                jwt.verify(token, jwtSecret);
+                driver = await Driver.findOne({ email });
+
+                if (!driver) {
+                    driver = new Driver({
+                        email,
+                        token,
+                        status: true,
+                        ...formData
+                    });
+                } else {
+                    driver.set(formData);
+                }
+            } catch {
+                return res.status(400).json({ error: 'Invalid or expired token' });
+            }
+        } else {
+            driver = new Driver({
+                email,
+                status: true,
+                ...formData
+            });
+        }
+
+        // Save the driver
         try {
             await driver.validate();
             await driver.save();
-            res.status(200).send('Driver application completed');
+            if (token) {
+                res.status(200).send('Driver application completed');
+            } else {
+                res.status(201).send('Driver application created');
+            }
         } catch (validationError) {
             res.status(400).json({ message: validationError.message });
         }
