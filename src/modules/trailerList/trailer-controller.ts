@@ -85,7 +85,7 @@ export const deleteTrailer = async (req, res) => {
     try {
         const { id } = req.params;
         await Trailer.findByIdAndDelete(id);
-        res.json({ message: 'Truck deleted successfully' });
+        res.json({ message: 'Trailer deleted successfully' });
     } catch (error) {
         res.status(400).json({ message: error.message });
     }
