@@ -10,7 +10,13 @@ export const createCompany = async (req: Request, res: Response) => {
                 return res.status(400).json({ message: "File upload failed" });
             }
 
-            const companyData = { ...req.body };
+            const user = (req as any).user;
+            const superadminId = user.superadminId;
+            const companyData = {
+                ...req.body,
+                createdBy: user._id,
+                superadminId,
+            };
 
             const cloudinaryUrls = (req as any).cloudinaryUrls;
 
@@ -52,6 +58,7 @@ export const updateCompany = async (req: Request, res: Response) => {
 
             const { id } = req.params;
             const companyData = { ...req.body };
+            const userId = (req as any).user._id;
 
             const cloudinaryUrls = (req as any).cloudinaryUrls;
 
@@ -73,7 +80,7 @@ export const updateCompany = async (req: Request, res: Response) => {
             }
 
             company.set(companyData);
-
+            company.updatedBy = userId;
             try {
                 await company.save();
                 res.status(200).json(company);
@@ -104,7 +111,21 @@ export const deleteCompany = async (req: Request, res: Response) => {
 
 export const getAllCompanies = async (req: Request, res: Response) => {
     try {
-        const companies = await Company.find();
+        const requester = (req as any).user;
+
+        let companies;
+
+        if (requester.usertype === 'superadmin') {
+            // Superadmin can see all companies
+            companies = await Company.find();
+        } else if (requester.usertype === 'admin') {
+            //can see only companies they created
+            companies = await Company.find({ createdBy: requester._id });
+        } else {
+            // Handle unauthorized access for other user types
+            return res.status(403).json({ message: 'Access denied. Unauthorized user type.' });
+        }
+
         res.status(200).json(companies);
     } catch (error) {
         res.status(400).json({ message: error.message });

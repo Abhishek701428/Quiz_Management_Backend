@@ -31,10 +31,13 @@ export interface Trailer extends Document {
   prepassTransponderNumber: string;
   fuelCardNumber: string;
   textArea: string;
-  // addedBy: mongoose.Types.ObjectId;
+  createdBy: Schema.Types.ObjectId; // Reference to the user who created the truck
+  adminId: Schema.Types.ObjectId;   // Reference to the admin who created the user
+  superadminId: Schema.Types.ObjectId; // Reference to the superadmin who added the admin
+  updatedBy: Schema.Types.ObjectId; 
 }
 
-const TruckSchema: Schema<Trailer> = new Schema({
+const TrailerSchema: Schema<Trailer> = new Schema({
   unitNumber: { type: String, required: true },
   vinNumber: { type: String, required: true },
   plateNumber: { type: String, required: true },
@@ -57,10 +60,12 @@ const TruckSchema: Schema<Trailer> = new Schema({
   payoffDate: { type: Date, required: true },
   prepassTransponderNumber: { type: String, required: true },
   fuelCardNumber: { type: String, required: true },
-  textArea: { type: String, },
-  // addedBy: { type: Schema.Types.ObjectId, ref: 'User', }
+  createdBy: { type: Schema.Types.ObjectId, required: true },
+  adminId: { type: Schema.Types.ObjectId },
+  superadminId: { type: Schema.Types.ObjectId },
+  updatedBy: { type: Schema.Types.ObjectId }
 });
 
-const Trailer = mongoose.model<Trailer>('Trailer', TruckSchema);
+const Trailer = mongoose.model<Trailer>('Trailer', TrailerSchema);
 
 export default Trailer;

@@ -1,14 +1,13 @@
 import { Request, Response, NextFunction } from 'express';
 import jwt, { JsonWebTokenError, TokenExpiredError } from 'jsonwebtoken';
 import * as dotenv from "dotenv";
-import User, { IUser } from '../modules/authUsers/usersModels';
+import User from '../modules/authUsers/usersModels'; 
 
 dotenv.config();
 
 export const authenticateAndAuthorize = (
   allowedUserTypes: string[]
 ) => async (req: Request, res: Response, next: NextFunction) => {
-  // const token = req.header('Authorization');
   const token = req.headers.authorization?.split(' ')[1] || req.header('Authorization');
 
   if (!token) {
@@ -42,4 +41,6 @@ export const authenticateAndAuthorize = (
   }
 };
 
+// Shortcuts for specific roles
 export const authenticateSuperAdminAndAdmin = authenticateAndAuthorize(['superadmin', 'admin']);
+export const authenticateUsers= authenticateAndAuthorize(['user','admin','superadmin']); 

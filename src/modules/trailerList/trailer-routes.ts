@@ -2,21 +2,19 @@ import { Router } from 'express';
 const router = Router();
 
 import * as trailerController from '../trailerList/trailer-controller';
-import { authenticateSuperAdminAndAdmin } from '../../middleware/authMiddleware';
+import {authenticateUsers , authenticateSuperAdminAndAdmin } from '../../middleware/authMiddleware';
 import { cloudinaryMiddleware } from '../../middleware/cloudinaryMiddleware';
 import checkPermissions from '../../middleware/permission-middleware';
-import { authenticateUser } from '../../middleware/permission-authenticate';
-//truck routes
-router.post('/trailer/create', authenticateUser, checkPermissions('truckList', 'create'), trailerController.createTrailer);
-router.get('/trailer/getAll', cloudinaryMiddleware, authenticateUser, checkPermissions('truckList', 'read'), trailerController.getTrailerAll);
-router.get('/trailer/get/:id', cloudinaryMiddleware, authenticateUser, checkPermissions('truckList', 'read'), trailerController.getTrailerbyId);
 
-//ACCORDING ADMIN GET AND CREATE 
 
-// router.post('/trailer/create',authenticateSuperAdminAndAdmin, trailerController.createTrailer);
-// router.get('/trailer/getAll',authenticateSuperAdminAndAdmin, trailerController.getTrailerAll);
+router.post('/trailer/create',authenticateUsers, checkPermissions('truckList', 'create'), trailerController.createTrailer);
 
-router.put('/trailer/update/:id', authenticateUser, checkPermissions('truckList', 'update'), trailerController.updateTrailer);
-router.delete('/trailer/delete/:id', authenticateUser, checkPermissions('truckList', 'delete'), trailerController.deleteTrailer);
+router.get('/trailer/getAll',authenticateUsers, cloudinaryMiddleware, checkPermissions('truckList', 'read'), trailerController.getTrailerAll);
+
+router.get('/trailer/get/:id', cloudinaryMiddleware,authenticateUsers, checkPermissions('truckList', 'read'), trailerController.getTrailerbyId);
+
+router.put('/trailer/update/:id', authenticateUsers, checkPermissions('truckList', 'update'), trailerController.updateTrailer);
+
+router.delete('/trailer/delete/:id', authenticateUsers, checkPermissions('truckList', 'delete'), trailerController.deleteTrailer);
 
 export default router;

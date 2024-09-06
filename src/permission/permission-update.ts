@@ -1,12 +1,11 @@
 import express from 'express';
-import { authenticateUser } from '../middleware/permission-authenticate';
 import checkPermissions from '../middleware/permission-middleware';
 import UserModel from '../modules/authUsers/usersModels';
-
+import { authenticateUsers } from '../middleware/authMiddleware';
 const router = express.Router();
 
 // Use authentication middleware
-router.use(authenticateUser);
+router.use(authenticateUsers);
 
 router.put('/update-permissions/:userId', checkPermissions('permissions', 'update'), async (req, res) => {
     const { userId } = req.params;

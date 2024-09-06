@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
-import { cloudinaryMiddleware } from '../../../middleware/cloudinaryMiddleware';
+import { cloudinaryMiddleware } from '../../middleware/cloudinaryMiddleware';
 import Truck from '../truckList/truck.models';
-
+import UserModel from '../../modules/authUsers/usersModels';
 // Create a truck
 export const createTruck = async (req: Request, res: Response) => {
   try {
@@ -11,11 +11,17 @@ export const createTruck = async (req: Request, res: Response) => {
         return res.status(400).json({ message: "File upload failed" });
       }
 
-      const truckData = { ...req.body };
+      const user = (req as any).user;
+      const adminId = user.adminId;
 
+      const truckData = {
+        ...req.body,
+        createdBy: user._id,
+        adminId
+      };
+
+      // Handle file uploads from req.cloudinaryUrls
       const cloudinaryUrls = (req as any).cloudinaryUrls;
-
-      // Handle file uploads
       if (cloudinaryUrls) {
         truckData.uploadDocument = cloudinaryUrls['uploadDocument'] || truckData.uploadDocument;
         truckData.uploadDocument1 = cloudinaryUrls['uploadDocument1'] || truckData.uploadDocument1;
@@ -39,26 +45,16 @@ export const createTruck = async (req: Request, res: Response) => {
   }
 };
 
-//update Truck
 export const updateTruck = async (req: Request, res: Response) => {
   try {
+    const { id } = req.params;
+
+    const userId = (req as any).user._id;
+
     cloudinaryMiddleware(req, res, async function (err: any) {
       if (err) {
         console.error('File upload error:', err);
         return res.status(400).json({ message: "File upload failed" });
-      }
-
-      const { id } = req.params;
-      const truckData = { ...req.body };
-
-      const cloudinaryUrls = (req as any).cloudinaryUrls;
-
-      // Handle file uploads
-      if (cloudinaryUrls) {
-        truckData.uploadDocument = cloudinaryUrls['uploadDocument'] || truckData.uploadDocument;
-        truckData.uploadDocument1 = cloudinaryUrls['uploadDocument1'] || truckData.uploadDocument1;
-        truckData.uploadDocument2 = cloudinaryUrls['uploadDocument2'] || truckData.uploadDocument2;
-        truckData.uploadDocument3 = cloudinaryUrls['uploadDocument3'] || truckData.uploadDocument3;
       }
 
       const truck = await Truck.findById(id);
@@ -67,7 +63,20 @@ export const updateTruck = async (req: Request, res: Response) => {
         return res.status(404).json({ message: "Truck not found" });
       }
 
+      const truckData = { ...req.body };
+
+      // Handle file uploads from req.cloudinaryUrls
+      const cloudinaryUrls = (req as any).cloudinaryUrls;
+      if (cloudinaryUrls) {
+        truckData.uploadDocument = cloudinaryUrls['uploadDocument'] || truckData.uploadDocument;
+        truckData.uploadDocument1 = cloudinaryUrls['uploadDocument1'] || truckData.uploadDocument1;
+        truckData.uploadDocument2 = cloudinaryUrls['uploadDocument2'] || truckData.uploadDocument2;
+        truckData.uploadDocument3 = cloudinaryUrls['uploadDocument3'] || truckData.uploadDocument3;
+      }
+
       truck.set(truckData);
+
+      truck.updatedBy = userId;
 
       try {
         await truck.save();
@@ -100,12 +109,37 @@ export const deleteTruck = async (req: Request, res: Response) => {
 // Get all trucks
 export const getTruckAll = async (req: Request, res: Response) => {
   try {
-    const trucks = await Truck.find();
-    res.json(trucks);
+    const user = (req as any).user;
+
+    if (!user || !user._id) {
+      console.log('User not authenticated or no user ID present.');
+      return res.status(401).json({ message: 'Unauthorized' });
+    }
+
+    let query = {};
+
+    if (user.usertype === 'superadmin') {
+      // Superadmin sees all trucks
+      query = {};
+    } else if (user.usertype === 'admin') {
+      // Admin sees trucks created by themselves or their associated users
+      const userIds = await getUserIdsCreatedByAdmin(user._id);
+      query = { $or: [{ createdBy: user._id }, { createdBy: { $in: userIds } }] };
+    } else {
+      // Regular users see only trucks they created
+      query = { createdBy: user._id };
+    }
+
+    const trucks = await Truck.find(query);
+    res.status(200).json(trucks);
   } catch (error) {
-    console.error('Error in getTruckAll:', error);
+    console.error('Error fetching trucks:', error);
     res.status(500).json({ message: 'Internal server error' });
   }
+};
+const getUserIdsCreatedByAdmin = async (adminId: string) => {
+  const users = await UserModel.find({ adminId: adminId }).select('_id');
+  return users.map(user => user._id.toString());
 };
 
 // Get a truck by ID

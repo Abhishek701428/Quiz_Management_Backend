@@ -31,7 +31,10 @@ export interface Truck extends Document {
   prepassTransponderNumber: string;
   fuelCardNumber: string;
   textArea: string;
-  // addedBy: mongoose.Types.ObjectId;
+  createdBy: Schema.Types.ObjectId; // Reference to the user who created the truck
+  adminId: Schema.Types.ObjectId;   // Reference to the admin who created the user
+  superadminId: Schema.Types.ObjectId; // Reference to the superadmin who added the admin
+  updatedBy: Schema.Types.ObjectId;
 }
 
 const TruckSchema: Schema<Truck> = new Schema({
@@ -58,7 +61,11 @@ const TruckSchema: Schema<Truck> = new Schema({
   prepassTransponderNumber: { type: String, required: true },
   fuelCardNumber: { type: String, required: true },
   textArea: { type: String },
-  // addedBy: { type: Schema.Types.ObjectId, ref: 'User', }
+  createdBy: { type: Schema.Types.ObjectId, required: true },
+  adminId: { type: Schema.Types.ObjectId },
+  superadminId: { type: Schema.Types.ObjectId },
+  updatedBy: { type: Schema.Types.ObjectId },
+
 });
 
 const Truck = mongoose.model<Truck>('Truck', TruckSchema);

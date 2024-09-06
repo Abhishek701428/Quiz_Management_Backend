@@ -59,7 +59,10 @@ interface IDriver extends Document {
     clearingHouseAnnualQuery: string;
     uploadDocument14: string;
     status: TruckStatus;
-    // addedBy: Types.ObjectId;
+    createdBy: Schema.Types.ObjectId; // Reference to the user who created the truck
+    adminId: Schema.Types.ObjectId;   // Reference to the admin who created the user
+    superadminId: Schema.Types.ObjectId; // Reference to the superadmin who added the admin
+    updatedBy: Schema.Types.ObjectId; 
 }
 
 const DriverSchema: Schema = new Schema({
@@ -114,8 +117,11 @@ const DriverSchema: Schema = new Schema({
     uploadDocument13: { type: String, required: true },
     clearingHouseAnnualQuery: { type: String, required: true },
     uploadDocument14: { type: String, required: true },
-    // addedBy: { type: Schema.Types.ObjectId, ref: 'User', required: true },
     status: { type: String, enum: Object.values(TruckStatus), required: true },
+    createdBy: { type: Schema.Types.ObjectId, required: true },
+    adminId: { type: Schema.Types.ObjectId },
+    superadminId: { type: Schema.Types.ObjectId },
+    updatedBy: { type: Schema.Types.ObjectId },
 });
 
 const Driver = model<IDriver>('Driver', DriverSchema);

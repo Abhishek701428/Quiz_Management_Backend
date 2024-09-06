@@ -29,12 +29,16 @@ interface ICompany extends Document {
     registrationUploadDocument: string;
     ownerAddress: string;
     ownerPhone: number;
+    ownerName: string
     ownerEmail: string;
     numberOfTrailer: number;
     trailerRegistration: Date;
     trailerUploadDocument: string;
     randomDtEnrollmentCert: string;
     randomDtUploadDocument: string;
+    createdBy: Schema.Types.ObjectId;
+    superadminId: Schema.Types.ObjectId;
+    updatedBy: Schema.Types.ObjectId;
 }
 
 const CompanySchema: Schema = new Schema({
@@ -66,12 +70,16 @@ const CompanySchema: Schema = new Schema({
     registrationUploadDocument: { type: String, required: true },
     ownerAddress: { type: String, required: true },
     ownerPhone: { type: Number, required: true },
+    ownerName: { type: String, required: true },
     ownerEmail: { type: String, required: true },
     numberOfTrailer: { type: Number, required: true },
     trailerRegistration: { type: Date, required: true },
     trailerUploadDocument: { type: String, required: true },
     randomDtEnrollmentCert: { type: String, required: true },
     randomDtUploadDocument: { type: String, required: true },
+    createdBy: { type: Schema.Types.ObjectId, required: true },
+    superadminId: { type: Schema.Types.ObjectId, required: true },
+    updatedBy: { type: Schema.Types.ObjectId }
 });
 
 const Company = mongoose.model<ICompany>('Company', CompanySchema);

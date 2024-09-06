@@ -11,6 +11,8 @@ export interface IUser extends Document {
     driverList?: { create?: boolean; read?: boolean; update?: boolean; delete?: boolean };
     driverApplication?: { create?: boolean; read?: boolean; update?: boolean; delete?: boolean };
   };
+  adminId?: mongoose.Types.ObjectId; // Reference to the admin who created the user
+  superadminId?: mongoose.Types.ObjectId; // Reference to the superadmin who created the admin
 }
 
 const userSchema = new Schema<IUser>({
@@ -34,34 +36,40 @@ const userSchema = new Schema<IUser>({
   },
   permissions: {
     truckList: {
-      create: { type: Boolean, default: false },
-      read: { type: Boolean, default: false },
+      create: { type: Boolean, default: true },
+      read: { type: Boolean, default: true },
       update: { type: Boolean, default: false },
       delete: { type: Boolean, default: false },
     },
     trailerList: {
-      create: { type: Boolean, default: false },
-      read: { type: Boolean, default: false },
+      create: { type: Boolean, default: true },
+      read: { type: Boolean, default: true },
       update: { type: Boolean, default: false },
       delete: { type: Boolean, default: false },
     },
     driverList: {
-      create: { type: Boolean, default: false },
-      read: { type: Boolean, default: false },
+      create: { type: Boolean, default: true },
+      read: { type: Boolean, default: true },
       update: { type: Boolean, default: false },
       delete: { type: Boolean, default: false },
     },
     driverApplication: {
-      create: { type: Boolean, default: false },
-      read: { type: Boolean, default: false },
+      create: { type: Boolean, default: true },
+      read: { type: Boolean, default: true },
       update: { type: Boolean, default: false },
       delete: { type: Boolean, default: false },
     },
   },
+  adminId: {
+    type: mongoose.Schema.Types.ObjectId,
+  },
+  superadminId: {
+    type: mongoose.Schema.Types.ObjectId,
+  },
 });
 
 // Add a pre-save hook to ensure superadmins and admins have all permissions
-userSchema.pre('save', function (next: Function) {
+userSchema.pre('save', function (next) {
   if (this.usertype === 'superadmin' || this.usertype === 'admin') {
     this.permissions = {
       truckList: { create: true, read: true, update: true, delete: true },

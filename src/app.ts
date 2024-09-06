@@ -5,7 +5,7 @@ import db from './database/db'
 import path from 'path';
 import * as dotenv from "dotenv";
 import usersRoutes from './modules/authUsers/usersRoutes';
-import truckRouter from "./modules/truckList/allRouter/router";
+import truckRouter from "./modules/truckList/truck-router";
 import trailerRouter from "./modules/trailerList/trailer-routes";
 import driverRouter from "./modules/driverList/driver-routes";
 import driverapplicationRouter from './modules/driverApplication/driverApplication-routes'
@@ -36,13 +36,21 @@ app.use(bodyParser.json());
 app.get('/', (req: Request, res: Response) => {
   res.send(`<h1>Hi, I am Hi Tech Project!</h1>`);
 });
+
+//For Users 
 app.use('/api', usersRoutes);
+//For Trucks
 app.use('/api/truckList', truckRouter);
+//For Trailers
 app.use('/api/trailerList', trailerRouter)
+//For Drivers
 app.use('/api/driverList', driverRouter)
+//For Driver Application
 app.use('/api/driverapplication', driverapplicationRouter)
+//For Company Profile
 app.use('/api/company', companyRouter)
 app.use('/api/companycarrier', companyCarrierRouter)
+//For DriverApplications Part 
 app.use('/api/accident', accidentRouter)
 app.use('/api/experince', experinceRouter)
 app.use('/api/license', licenseRouter)

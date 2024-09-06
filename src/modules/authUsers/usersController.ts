@@ -50,58 +50,60 @@ const loginAllUsers = async (req: Request, res: Response) => {
   }
 };
 
+//Regitser All 
 const registerAllUser = async (req: Request, res: Response) => {
-  const { name, email, password, usertype } = req.body;
+  const { name, email, password, usertype, permissions } = req.body;
 
   try {
     const existingUser = await UserModel.findOne({ email });
-
     if (existingUser) {
       return res.status(400).json({ message: 'User or Admin already exists' });
     }
 
     const requester = (req as any).user as IUser;
-    // Check if the requester is a 'superadmin' or 'admin'
     if (!['superadmin', 'admin'].includes(requester.usertype)) {
-      return res.status(403).json({ message: 'Access denied. Not a superadmin or admin.' });
+      return res.status(403).json({ message: 'Access denied. Only superadmins or admins can register users or admins.' });
     }
 
-    // Check if the usertype is valid
-    if (!['admin', 'user'].includes(usertype)) {
+    if (requester.usertype === 'admin' && usertype !== 'user') {
+      return res.status(403).json({ message: 'Admins can only register users.' });
+    }
+
+    if (requester.usertype === 'superadmin' && !['admin', 'user'].includes(usertype)) {
       return res.status(400).json({ message: 'Invalid usertype. Only "admin" or "user" is allowed.' });
     }
 
-    // Check if the requester is 'superadmin' or 'admin' to allow registration of 'user'
-    if (requester.usertype === 'user') {
-      return res.status(403).json({ message: 'Access denied. Only superadmins or admins can register users.' });
-    }
-
-    // Hash the password before storing it in the database
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Create a new user or admin by the admin or superadmin with the hashed password
-    const newUserOrAdmin = new UserModel({ name, email, password: hashedPassword, usertype });
+    // Determine the IDs to set
+    const adminId = requester.usertype === 'admin' ? requester._id : undefined;
+    const superadminId = requester.usertype === 'superadmin' ? requester._id : requester.superadminId;
 
-    try {
-      await newUserOrAdmin.validate();
-      await newUserOrAdmin.save();
+    const newUserOrAdmin = new UserModel({
+      name,
+      email,
+      password: hashedPassword,
+      usertype,
+      adminId,
+      superadminId,
+      permissions: permissions || undefined,
+    });
 
-      res.status(201).json({ message: 'User or Admin created successfully', newUserOrAdmin });
-    }
-    catch (validationError) {
-      res.status(400).json({ message: validationError.message });
-    }
-  }
-  catch (error) {
+    await newUserOrAdmin.validate();
+    await newUserOrAdmin.save();
+
+    res.status(201).json({ message: 'User or Admin created successfully', newUserOrAdmin });
+  } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Server Error' });
   }
 };
 
 
+
 const changePassword = async (req: Request, res: Response) => {
   const { email, oldPassword, newPassword } = req.body;
-  
+
   if (!email || typeof email !== 'string' || !/^[\w-.]+@([\w-]+\.)+[a-zA-Z]{2,7}$/.test(email)) {
     return res.status(400).json({ message: 'Valid email is required.' });
   }
@@ -157,6 +159,32 @@ const getUsers = async (req: Request, res: Response) => {
   }
 };
 
+const getUsersByAdmin = async (req: Request, res: Response) => {
+  try {
+    const admin = (req as any).user as IUser;
+
+    if (!['superadmin', 'admin'].includes(admin.usertype)) {
+      return res.status(403).json({ message: 'Access denied. Not a superadmin or admin.' });
+    }
+
+    let users;
+
+    if (admin.usertype === 'superadmin') {
+      // If the requester is a superadmin, find all users except the superadmin making the request
+      users = await UserModel.find({ _id: { $ne: admin._id } });
+    } else if (admin.usertype === 'admin') {
+      // If the requester is an admin, find only the users created by them
+      users = await UserModel.find({ adminId: admin._id });
+    }
+
+    res.status(200).json({ users });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server Error' });
+  }
+};
+
+
 const getAllUsers = async (req: Request, res: Response) => {
   try {
     const users = await UserModel.find();
@@ -170,6 +198,39 @@ const getAllUsers = async (req: Request, res: Response) => {
     res.status(500).json({ message: 'Server Error' });
   }
 };
-export { loginAllUsers, registerAllUser, changePassword, getUsers, getAllUsers };
+
+const deleteUser = async (req: Request, res: Response) => {
+  const { id } = req.params;
+
+  if (!id) {
+    return res.status(400).json({ message: 'User ID is required.' });
+  }
+
+  try {
+    const requester = (req as any).user as IUser;
+
+    // Check if the requester is a superadmin or admin
+    if (!['superadmin', 'admin'].includes(requester.usertype)) {
+      return res.status(403).json({ message: 'Access denied. Only superadmins or admins can delete users.' });
+    }
+
+    const userToDelete = await UserModel.findById(id);
+
+    if (!userToDelete) {
+      return res.status(404).json({ message: 'User not found.' });
+    }
+
+    await UserModel.findByIdAndDelete(id);
+
+    res.status(200).json({ message: 'User deleted successfully.' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server Error' });
+  }
+}
+
+
+
+export { loginAllUsers, registerAllUser, changePassword, getUsers, getAllUsers, getUsersByAdmin, deleteUser };
 
 

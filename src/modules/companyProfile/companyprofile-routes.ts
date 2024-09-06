@@ -1,11 +1,11 @@
 import { Router } from 'express';
 const router = Router();
 import * as companyController from '../companyProfile/companyprofile-controller';
-import { authenticateSuperAdminAndAdmin } from '../../middleware/authMiddleware';
+import { authenticateUsers,authenticateSuperAdminAndAdmin } from '../../middleware/authMiddleware';
 import { cloudinaryMiddleware } from '../../middleware/cloudinaryMiddleware';
 //truck routes
-router.post('/create', companyController.createCompany);
-router.get('/getAll',cloudinaryMiddleware, companyController.getAllCompanies);
+router.post('/create',authenticateSuperAdminAndAdmin, companyController.createCompany);
+router.get('/getAll',authenticateSuperAdminAndAdmin,cloudinaryMiddleware, companyController.getAllCompanies);
 router.get('/get/:id',cloudinaryMiddleware, companyController.getCompanyById);
 
 //ACCORDING ADMIN GET AND CREATE 
