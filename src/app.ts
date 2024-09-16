@@ -5,7 +5,7 @@ import db from './database/db'
 import path from 'path';
 import * as dotenv from "dotenv";
 import usersRoutes from './modules/authUsers/usersRoutes';
-import truckRouter from "./modules/truckList/truck-router";
+import truckRouter from "./modules/truckList/router";
 import trailerRouter from "./modules/trailerList/trailer-routes";
 import driverRouter from "./modules/driverList/driver-routes";
 import driverapplicationRouter from './modules/driverApplication/driverApplication-routes'

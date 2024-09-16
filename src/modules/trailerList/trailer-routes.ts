@@ -2,16 +2,17 @@ import { Router } from 'express';
 const router = Router();
 
 import * as trailerController from '../trailerList/trailer-controller';
-import {authenticateUsers , authenticateSuperAdminAndAdmin } from '../../middleware/authMiddleware';
+import { authenticateUsers, authenticateSuperAdminAndAdmin } from '../../middleware/authMiddleware';
 import { cloudinaryMiddleware } from '../../middleware/cloudinaryMiddleware';
 import checkPermissions from '../../middleware/permission-middleware';
+import { authorize } from '../../middleware/get.authentication';
 
 
-router.post('/trailer/create',authenticateUsers, checkPermissions('truckList', 'create'), trailerController.createTrailer);
+router.post('/trailer/create', authenticateUsers, checkPermissions('truckList', 'create'), trailerController.createTrailer);
 
-router.get('/trailer/getAll',authenticateUsers, cloudinaryMiddleware, checkPermissions('truckList', 'read'), trailerController.getTrailerAll);
+router.get('/trailer/getAll', authenticateUsers, cloudinaryMiddleware, authorize, checkPermissions('truckList', 'read'), trailerController.getTrailerAll);
 
-router.get('/trailer/get/:id', cloudinaryMiddleware,authenticateUsers, checkPermissions('truckList', 'read'), trailerController.getTrailerbyId);
+router.get('/trailer/get/:id', cloudinaryMiddleware, authenticateUsers, checkPermissions('truckList', 'read'), trailerController.getTrailerbyId);
 
 router.put('/trailer/update/:id', authenticateUsers, checkPermissions('truckList', 'update'), trailerController.updateTrailer);
 

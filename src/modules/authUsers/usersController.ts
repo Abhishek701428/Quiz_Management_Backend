@@ -89,15 +89,19 @@ const registerAllUser = async (req: Request, res: Response) => {
       permissions: permissions || undefined,
     });
 
-    await newUserOrAdmin.validate();
-    await newUserOrAdmin.save();
-
-    res.status(201).json({ message: 'User or Admin created successfully', newUserOrAdmin });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Server Error' });
+    try {
+      await newUserOrAdmin.validate();
+      await newUserOrAdmin.save();
+      res.status(201).json({ message: 'User or Admin created successfully', newUserOrAdmin });
+    } catch (validationError) {
+      res.status(400).json({ message: validationError.message });
+    }
   }
-};
+  catch (error) {
+    console.error('Error in createTruck:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+}
 
 
 

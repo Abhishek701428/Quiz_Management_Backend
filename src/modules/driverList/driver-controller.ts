@@ -1,6 +1,6 @@
 import { cloudinaryMiddleware } from '../../middleware/cloudinaryMiddleware';
 import Driver from '../driverList/driver-model';
-import UserModel from '../../modules/authUsers/usersModels';
+
 // Create a driver
 export const createDriver = async (req, res) => {
     try {
@@ -96,38 +96,16 @@ export const deleteDriver = async (req, res) => {
 // Get all drivers
 export const getAllDrivers = async (req , res) => {
     try {
-      const user = (req as any).user;
-  
-      if (!user || !user._id) {
-        console.log('User not authenticated or no user ID present.');
-        return res.status(401).json({ message: 'Unauthorized' });
+        const query = (req as any).query || {};
+    
+        const trucks = await Driver.find(query);
+        res.status(200).json(trucks);
+      } catch (error) {
+        console.error('Error fetching trucks:', error);
+        res.status(500).json({ message: 'Internal server error' });
       }
-  
-      let query = {};
-  
-      if (user.usertype === 'superadmin') {
-        // Superadmin sees all trucks
-        query = {};
-      } else if (user.usertype === 'admin') {
-        // Admin sees trucks created by themselves or their associated users
-        const userIds = await getUserIdsCreatedByAdmin(user._id);
-        query = { $or: [{ createdBy: user._id }, { createdBy: { $in: userIds } }] };
-      } else {
-        // Regular users see only trucks they created
-        query = { createdBy: user._id };
-      }
-  
-      const trucks = await Driver.find(query);
-      res.status(200).json(trucks);
-    } catch (error) {
-      console.error('Error fetching trucks:', error);
-      res.status(500).json({ message: 'Internal server error' });
-    }
   };
-  const getUserIdsCreatedByAdmin = async (adminId: string) => {
-    const users = await UserModel.find({ adminId: adminId }).select('_id');
-    return users.map(user => user._id.toString());
-  };
+
 
 
 export const getDriverbyId = async (req, res) => {

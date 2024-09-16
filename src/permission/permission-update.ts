@@ -18,27 +18,29 @@ router.put('/update-permissions/:userId', checkPermissions('permissions', 'updat
             return res.status(404).json({ message: 'User not found' });
         }
 
-        const validPermissions = ['truckList', 'trailerList', 'driverList', 'driverApplication'];
-        const isValid = Object.keys(permissions).every(key => validPermissions.includes(key) &&
-            ['create', 'read', 'update', 'delete'].every(action => typeof permissions[key][action] === 'boolean'));
+        const validPermissions = ['truckList', 'trailerList', 'driverList', 'driverApplication', 'companyList'];
+        const isValid = Object.keys(permissions).every(key =>
+            validPermissions.includes(key) &&
+            ['create', 'read', 'update', 'delete'].every(action => typeof permissions[key][action] === 'boolean')
+        );
 
         if (!isValid) {
+            console.log('Invalid permissions format:', permissions);
             return res.status(400).json({ message: 'Invalid permissions format' });
         }
 
         user.permissions = permissions;
-        // await user.save();
         try {
             await user.validate();
             await user.save();
             return res.status(200).json({ message: 'Permissions updated successfully' });
         } catch (validationError) {
-            res.status(400).json({ message: validationError.message });
+            return res.status(400).json({ message: validationError.message });
         }
 
     } catch (error) {
         return res.status(500).json({ message: 'Server error', error });
     }
-})
+});
 
 export default router;

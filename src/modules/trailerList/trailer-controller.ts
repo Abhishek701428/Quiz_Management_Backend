@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { cloudinaryMiddleware } from '../../middleware/cloudinaryMiddleware';
 import Trailer from '../trailerList/trailer-model';
-import UserModel from '../../modules/authUsers/usersModels';
+
 // Create a trailer
 export const createTrailer = async (req: Request, res: Response) => {
     try {
@@ -106,38 +106,16 @@ export const deleteTrailer = async (req, res) => {
 // Get all trucks
 export const getTrailerAll = async (req: Request, res: Response) => {
     try {
-      const user = (req as any).user;
-  
-      if (!user || !user._id) {
-        console.log('User not authenticated or no user ID present.');
-        return res.status(401).json({ message: 'Unauthorized' });
+        const query = (req as any).query || {};
+    
+        const trucks = await Trailer.find(query);
+        res.status(200).json(trucks);
+      } catch (error) {
+        console.error('Error fetching trucks:', error);
+        res.status(500).json({ message: 'Internal server error' });
       }
-  
-      let query = {};
-  
-      if (user.usertype === 'superadmin') {
-        // Superadmin sees all trucks
-        query = {};
-      } else if (user.usertype === 'admin') {
-        // Admin sees trucks created by themselves or their associated users
-        const userIds = await getUserIdsCreatedByAdmin(user._id);
-        query = { $or: [{ createdBy: user._id }, { createdBy: { $in: userIds } }] };
-      } else {
-        // Regular users see only trucks they created
-        query = { createdBy: user._id };
-      }
-  
-      const trucks = await Trailer.find(query);
-      res.status(200).json(trucks);
-    } catch (error) {
-      console.error('Error fetching trucks:', error);
-      res.status(500).json({ message: 'Internal server error' });
-    }
   };
-  const getUserIdsCreatedByAdmin = async (adminId: string) => {
-    const users = await UserModel.find({ adminId: adminId }).select('_id');
-    return users.map(user => user._id.toString());
-  };
+
 
 export const getTrailerbyId = async (req, res) => {
     try {

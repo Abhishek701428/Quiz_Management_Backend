@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import jwt, { JsonWebTokenError, TokenExpiredError } from 'jsonwebtoken';
 import * as dotenv from "dotenv";
-import User from '../modules/authUsers/usersModels'; 
+import User from '../modules/authUsers/usersModels';
 
 dotenv.config();
 
@@ -42,5 +42,6 @@ export const authenticateAndAuthorize = (
 };
 
 // Shortcuts for specific roles
+export const authenticateSuperAdmin = authenticateAndAuthorize(['superadmin'])
 export const authenticateSuperAdminAndAdmin = authenticateAndAuthorize(['superadmin', 'admin']);
-export const authenticateUsers= authenticateAndAuthorize(['user','admin','superadmin']); 
+export const authenticateUsers = authenticateAndAuthorize(['user', 'admin', 'superadmin']); 
