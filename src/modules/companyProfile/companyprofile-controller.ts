@@ -115,12 +115,15 @@ export const getAllCompanies = async (req: Request, res: Response) => {
 
         let companies;
 
-        if (requester.usertype === 'superadmin') {
+        if (requester.role === 'superadmin') {
             // Superadmin can see all companies
             companies = await Company.find();
-        } else if (requester.usertype === 'admin') {
-            //can see only companies they created
-            companies = await Company.find({ createdBy: requester._id });
+        } else if (requester.role === 'admin') {
+            // Admin can see only their associated company
+            companies = await Company.find({ _id: requester.companyId });
+        } else if (requester.role === 'superadminuser') {
+            // Superadmin user can see companies associated with their superadmin
+            companies = await Company.find({ superadminId: requester.superadminId });
         } else {
             // Handle unauthorized access for other user types
             return res.status(403).json({ message: 'Access denied. Unauthorized user type.' });
@@ -131,6 +134,7 @@ export const getAllCompanies = async (req: Request, res: Response) => {
         res.status(400).json({ message: error.message });
     }
 };
+
 
 export const getCompanyById = async (req: Request, res: Response) => {
     try {

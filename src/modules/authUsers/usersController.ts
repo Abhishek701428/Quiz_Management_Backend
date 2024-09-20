@@ -23,7 +23,7 @@ const loginAllUsers = async (req: Request, res: Response) => {
       return res.status(401).json({ message: 'Invalid credentials' });
     }
 
-    if (user.usertype === 'superadmin') {
+    if (user.role === 'superadmin') {
       if (user.password !== password) {
         return res.status(401).json({ message: 'Invalid credentials' });
       }
@@ -36,14 +36,15 @@ const loginAllUsers = async (req: Request, res: Response) => {
     const token = jwt.sign(
       {
         id: user._id,
-        usertype: user.usertype,
-        name: user.name, // Include the user's name in the token payload
+        role: user.role,
+        name: user.name, 
+        companyId: user.companyId
       },
       process.env.AUTH_SECRET_KEY,
       { expiresIn: '30d' }
     );
 
-    res.status(200).json({ token, name: user.name, usertype: user.usertype });
+    res.status(200).json({ token, name: user.name, role: user.role, companyId: user.companyId });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Server Error' });
@@ -52,7 +53,7 @@ const loginAllUsers = async (req: Request, res: Response) => {
 
 //Regitser All 
 const registerAllUser = async (req: Request, res: Response) => {
-  const { name, email, password, usertype, permissions } = req.body;
+  const { name, email, password, role, companyId, permissions } = req.body;
 
   try {
     const existingUser = await UserModel.findOne({ email });
@@ -61,31 +62,28 @@ const registerAllUser = async (req: Request, res: Response) => {
     }
 
     const requester = (req as any).user as IUser;
-    if (!['superadmin', 'admin'].includes(requester.usertype)) {
-      return res.status(403).json({ message: 'Access denied. Only superadmins or admins can register users or admins.' });
+
+    // Check if the requester has the permission to create the requested role
+    if (requester.role === 'admin' && role !== 'adminuser') {
+      return res.status(403).json({ message: 'Admins can only register adminuser roles.' });
     }
 
-    if (requester.usertype === 'admin' && usertype !== 'user') {
-      return res.status(403).json({ message: 'Admins can only register users.' });
-    }
-
-    if (requester.usertype === 'superadmin' && !['admin', 'user'].includes(usertype)) {
-      return res.status(400).json({ message: 'Invalid usertype. Only "admin" or "user" is allowed.' });
+    if (requester.role === 'superadmin' && !['admin', 'superadminuser', 'adminuser'].includes(role)) {
+      return res.status(400).json({ message: 'Invalid role. Superadmin can only register admin, superadminuser, or adminuser.' });
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Determine the IDs to set
-    const adminId = requester.usertype === 'admin' ? requester._id : undefined;
-    const superadminId = requester.usertype === 'superadmin' ? requester._id : requester.superadminId;
-
+    // Set the superadminId based on the requester's role
+    const superadminId = requester.role === 'superadmin' ? requester._id : requester.superadminId;
     const newUserOrAdmin = new UserModel({
       name,
       email,
       password: hashedPassword,
-      usertype,
-      adminId,
+      role,
+      companyId,
       superadminId,
+      adminId: requester.role === 'admin' ? requester._id : undefined,
       permissions: permissions || undefined,
     });
 
@@ -96,12 +94,11 @@ const registerAllUser = async (req: Request, res: Response) => {
     } catch (validationError) {
       res.status(400).json({ message: validationError.message });
     }
-  }
-  catch (error) {
-    console.error('Error in createTruck:', error);
+  } catch (error) {
+    console.error('Error in registerAllUser:', error);
     res.status(500).json({ message: 'Internal server error' });
   }
-}
+};
 
 
 
@@ -149,57 +146,40 @@ const changePassword = async (req: Request, res: Response) => {
   }
 };
 
-const getUsers = async (req: Request, res: Response) => {
-  try {
-    const users = await UserModel.find({ usertype: 'user' });
+const getAllUsers = async (req: Request, res: Response) => {
+  const requester = (req as any).user; 
 
-    res.status(200).json({ users });
-  } catch (error) {
-    if (error instanceof Error) {
-      res.status(500).json({ message: error.message });
-    }
-    console.error(error);
-    res.status(500).json({ message: 'Server Error' });
+  if (!requester) {
+    return res.status(403).json({ message: 'No requester found. Access denied.' });
   }
-};
 
-const getUsersByAdmin = async (req: Request, res: Response) => {
   try {
-    const admin = (req as any).user as IUser;
-
-    if (!['superadmin', 'admin'].includes(admin.usertype)) {
-      return res.status(403).json({ message: 'Access denied. Not a superadmin or admin.' });
-    }
-
     let users;
 
-    if (admin.usertype === 'superadmin') {
-      // If the requester is a superadmin, find all users except the superadmin making the request
-      users = await UserModel.find({ _id: { $ne: admin._id } });
-    } else if (admin.usertype === 'admin') {
-      // If the requester is an admin, find only the users created by them
-      users = await UserModel.find({ adminId: admin._id });
+    if (requester.role === 'superadmin') {
+      users = await UserModel.find({
+        $or: [
+          { role: 'admin', superadminId: requester._id },
+          { role: 'superadminuser', superadminId: requester._id },
+        ],
+      });
+    } else if (requester.role === 'admin') {
+      users = await UserModel.find({
+        role: 'adminuser',
+        adminId: requester._id, 
+      });
+    } else {
+      return res.status(403).json({ message: 'Access denied. You are not authorized to view users.' });
     }
 
-    res.status(200).json({ users });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Server Error' });
-  }
-};
-
-
-const getAllUsers = async (req: Request, res: Response) => {
-  try {
-    const users = await UserModel.find();
-
-    res.status(200).json({ users });
-  } catch (error) {
-    if (error instanceof Error) {
-      res.status(500).json({ message: error.message });
+    if (!users || users.length === 0) {
+      return res.status(404).json({ message: 'No users found.' });
     }
-    console.error(error);
-    res.status(500).json({ message: 'Server Error' });
+
+    res.status(200).json(users);
+  } catch (error) {
+    console.error('Error fetching users:', error);
+    res.status(500).json({ message: 'Internal server error.' });
   }
 };
 
@@ -214,7 +194,7 @@ const deleteUser = async (req: Request, res: Response) => {
     const requester = (req as any).user as IUser;
 
     // Check if the requester is a superadmin or admin
-    if (!['superadmin', 'admin'].includes(requester.usertype)) {
+    if (!['superadmin', 'admin'].includes(requester.role)) {
       return res.status(403).json({ message: 'Access denied. Only superadmins or admins can delete users.' });
     }
 
@@ -235,6 +215,6 @@ const deleteUser = async (req: Request, res: Response) => {
 
 
 
-export { loginAllUsers, registerAllUser, changePassword, getUsers, getAllUsers, getUsersByAdmin, deleteUser };
+export { loginAllUsers, registerAllUser, changePassword, getAllUsers, deleteUser };
 
 

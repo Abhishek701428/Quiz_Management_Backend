@@ -78,8 +78,8 @@ const CompanySchema: Schema = new Schema({
     randomDtEnrollmentCert: { type: String, required: true },
     randomDtUploadDocument: { type: String, required: true },
     createdBy: { type: Schema.Types.ObjectId, required: true },
+    updatedBy: { type: Schema.Types.ObjectId },
     superadminId: { type: Schema.Types.ObjectId },
-    updatedBy: { type: Schema.Types.ObjectId }
 });
 
 const Company = mongoose.model<ICompany>('Company', CompanySchema);

@@ -52,9 +52,6 @@ const companySchema: Schema = new Schema(
       required: true,
     },
   },
-  {
-    timestamps: true, 
-  }
 );
 
 const CustomerData = mongoose.model<ICompany>('CustomerData', companySchema);

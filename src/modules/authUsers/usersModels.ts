@@ -4,7 +4,7 @@ import { defaultPermissions, superadminPermissions } from './permission';
 export interface IUser extends Document {
   name: string;
   email: string;
-  usertype: 'superadmin' | 'admin' | 'user';
+  role: 'superadmin' | 'admin' | 'adminuser' | 'superadminuser';
   password: string;
   permissions: {
     truckList?: { create?: boolean; read?: boolean; update?: boolean; delete?: boolean };
@@ -13,6 +13,7 @@ export interface IUser extends Document {
     driverApplication?: { create?: boolean; read?: boolean; update?: boolean; delete?: boolean };
     companyList?: { create?: boolean; read?: boolean; update?: boolean; delete?: boolean };
   };
+  companyId: mongoose.Types.ObjectId[];  
   adminId?: mongoose.Types.ObjectId;
   superadminId?: mongoose.Types.ObjectId;
 }
@@ -20,17 +21,19 @@ export interface IUser extends Document {
 const userSchema = new Schema<IUser>({
   name: { type: String, required: true },
   email: { type: String, required: true, unique: true },
-  usertype: { type: String, enum: ['superadmin', 'admin', 'user'], required: true },
+  role: { type: String, enum: ['superadmin', 'admin', 'adminuser', 'superadminuser'], required: true },
   password: { type: String, required: true },
   permissions: { type: Object, default: defaultPermissions },
+  companyId: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Company' }],
   adminId: { type: mongoose.Schema.Types.ObjectId },
   superadminId: { type: mongoose.Schema.Types.ObjectId },
 });
 
+// Pre-save hook to manage permissions based on role
 userSchema.pre('save', function (next) {
-  if (this.usertype === 'superadmin') {
+  if (this.role === 'superadmin') {
     this.permissions = superadminPermissions;
-  }
+  } 
   next();
 });
 

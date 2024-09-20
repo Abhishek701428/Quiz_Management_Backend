@@ -6,7 +6,7 @@ import User from '../modules/authUsers/usersModels';
 dotenv.config();
 
 export const authenticateAndAuthorize = (
-  allowedUserTypes: string[]
+  allowedRoles: string[]
 ) => async (req: Request, res: Response, next: NextFunction) => {
   const token = req.headers.authorization?.split(' ')[1] || req.header('Authorization');
 
@@ -17,7 +17,7 @@ export const authenticateAndAuthorize = (
   try {
     const decoded: any = jwt.verify(token, process.env.AUTH_SECRET_KEY);
 
-    if (!allowedUserTypes.includes(decoded.usertype)) {
+    if (!allowedRoles.includes(decoded.role)) {
       return res.status(403).json({ message: 'Access denied. Not authorized.' });
     }
 
@@ -27,6 +27,7 @@ export const authenticateAndAuthorize = (
       return res.status(401).json({ message: 'User not found.' });
     }
 
+    // Attach the user to the request
     (req as any).user = user;
     next();
   } catch (err) {
@@ -41,7 +42,7 @@ export const authenticateAndAuthorize = (
   }
 };
 
-// Shortcuts for specific roles
-export const authenticateSuperAdmin = authenticateAndAuthorize(['superadmin'])
-export const authenticateSuperAdminAndAdmin = authenticateAndAuthorize(['superadmin', 'admin']);
-export const authenticateUsers = authenticateAndAuthorize(['user', 'admin', 'superadmin']); 
+// Middleware shortcuts for role-based authentication
+export const authenticateSuperAdmin = authenticateAndAuthorize(['superadmin']);
+export const authenticateSuperAdminAndAdmin = authenticateAndAuthorize(['superadmin', 'admin','superadminuser']);
+export const authenticateUsers = authenticateAndAuthorize(['superadmin', 'admin', 'adminuser', 'superadminuser']);

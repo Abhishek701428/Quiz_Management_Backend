@@ -18,7 +18,7 @@ const checkPermissions = (resource: string, action: string) => async (req: Reque
         }
 
         // Allow permission updates only for superadmins and admins
-        if (userFromDb.usertype === 'superadmin' || userFromDb.usertype === 'admin') {
+        if (userFromDb.role === 'superadmin' || userFromDb.role === 'admin') {
             return next();
         }
         // For other actions, check resource permissions
