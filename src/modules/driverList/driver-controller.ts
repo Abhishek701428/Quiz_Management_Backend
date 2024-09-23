@@ -96,12 +96,11 @@ export const deleteDriver = async (req, res) => {
 // Get all drivers
 export const getAllDrivers = async (req , res) => {
     try {
-        const query = (req as any).query || {};
-    
-        const trucks = await Driver.find(query);
-        res.status(200).json(trucks);
+        const query = (req as any).accessQuery; 
+        const drivers = await Driver.find(query);
+        res.status(200).json(drivers);
       } catch (error) {
-        console.error('Error fetching trucks:', error);
+        console.error('Error in getAllDrivers:', error);
         res.status(500).json({ message: 'Internal server error' });
       }
   };

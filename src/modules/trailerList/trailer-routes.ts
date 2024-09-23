@@ -5,12 +5,13 @@ import * as trailerController from '../trailerList/trailer-controller';
 import { authenticateUsers, authenticateSuperAdminAndAdmin } from '../../middleware/authMiddleware';
 import { cloudinaryMiddleware } from '../../middleware/cloudinaryMiddleware';
 import checkPermissions from '../../middleware/permission-middleware';
-import { authorize } from '../../middleware/get.authentication';
+import { authorizeAccess } from '../../middleware/get.authentication';
+
 
 
 router.post('/trailer/create', authenticateUsers, checkPermissions('truckList', 'create'), trailerController.createTrailer);
 
-router.get('/trailer/getAll', authenticateUsers, cloudinaryMiddleware, authorize, checkPermissions('truckList', 'read'), trailerController.getTrailerAll);
+router.get('/trailer/getAll', authenticateUsers, authorizeAccess, cloudinaryMiddleware, checkPermissions('truckList', 'read'), trailerController.getTrailerAll);
 
 router.get('/trailer/get/:id', cloudinaryMiddleware, authenticateUsers, checkPermissions('truckList', 'read'), trailerController.getTrailerbyId);
 

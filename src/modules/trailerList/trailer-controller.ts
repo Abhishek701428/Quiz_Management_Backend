@@ -106,12 +106,11 @@ export const deleteTrailer = async (req, res) => {
 // Get all trucks
 export const getTrailerAll = async (req: Request, res: Response) => {
     try {
-        const query = (req as any).query || {};
-    
-        const trucks = await Trailer.find(query);
-        res.status(200).json(trucks);
+        const query = (req as any).accessQuery;
+        const trailers = await Trailer.find(query);
+        res.status(200).json(trailers);
       } catch (error) {
-        console.error('Error fetching trucks:', error);
+        console.error('Error in getAllTrailers:', error);
         res.status(500).json({ message: 'Internal server error' });
       }
   };

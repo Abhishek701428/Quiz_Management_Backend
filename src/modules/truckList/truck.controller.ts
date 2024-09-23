@@ -109,12 +109,11 @@ export const deleteTruck = async (req: Request, res: Response) => {
 // Get all trucks
 export const getTruckAll = async (req: Request, res: Response) => {
   try {
-    const query = (req as any).query || {};
-
+    const query = (req as any).accessQuery; // Use the query attached by the middleware
     const trucks = await Truck.find(query);
     res.status(200).json(trucks);
   } catch (error) {
-    console.error('Error fetching trucks:', error);
+    console.error('Error in getAllTrucks:', error);
     res.status(500).json({ message: 'Internal server error' });
   }
 };

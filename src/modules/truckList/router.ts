@@ -2,20 +2,20 @@ import { Router } from 'express';
 const router = Router();
 
 import * as truckController from './truck.controller';
-import {authenticateUsers, authenticateSuperAdminAndAdmin ,} from '../../middleware/authMiddleware';
+import { authenticateUsers, authenticateSuperAdminAndAdmin, } from '../../middleware/authMiddleware';
 import { cloudinaryMiddleware } from '../../middleware/cloudinaryMiddleware';
-import { authorize } from '../../middleware/get.authentication';
 import checkPermissions from '../../middleware/permission-middleware';
+import { authorizeAccess } from '../../middleware/get.authentication';
 //truck routes
 
-router.post('/truck/create',authenticateUsers, checkPermissions('truckList', 'create'), truckController.createTruck);
+router.post('/truck/create', authenticateUsers, checkPermissions('truckList', 'create'), truckController.createTruck);
 
-router.get('/truck/getAll', cloudinaryMiddleware,authenticateUsers,authorize, checkPermissions('truckList', 'read'),truckController.getTruckAll);
+router.get('/truck/getAll', cloudinaryMiddleware, authenticateUsers, authorizeAccess, checkPermissions('truckList', 'read'), truckController.getTruckAll);
 
-router.get('/truck/get/:id', cloudinaryMiddleware,authenticateUsers, checkPermissions('truckList', 'read'),truckController.getTruckbyId);
+router.get('/truck/get/:id', cloudinaryMiddleware, authenticateUsers, checkPermissions('truckList', 'read'), truckController.getTruckbyId);
 
-router.put('/truck/update/:id',authenticateUsers, checkPermissions('truckList', 'update'), truckController.updateTruck);
+router.put('/truck/update/:id', authenticateUsers, checkPermissions('truckList', 'update'), truckController.updateTruck);
 
-router.delete('/truck/delete/:id',authenticateUsers, checkPermissions('truckList', 'delete'), truckController.deleteTruck);
+router.delete('/truck/delete/:id', authenticateUsers, checkPermissions('truckList', 'delete'), truckController.deleteTruck);
 
 export default router;
