@@ -5,9 +5,9 @@ import * as CustomerData from '../Customer Data/customerdata-controller';
 import { authenticateSuperAdminAndAdmin, authenticateUsers } from '../../../middleware/authMiddleware';
 import { authorizeAccess } from '../../../middleware/get.authentication';
 //truck routes
-router.post('/create',authorizeAccess, CustomerData.createCompany);
+router.post('/create', authenticateUsers, authorizeAccess, CustomerData.createCompany);
 
-router.get('/getAll',authorizeAccess, CustomerData.getAllCompanies);
+router.get('/getAll', authenticateUsers, authorizeAccess, CustomerData.getAllCompanies);
 
 router.put('/update/:id', authenticateSuperAdminAndAdmin, CustomerData.updateCompany);
 
