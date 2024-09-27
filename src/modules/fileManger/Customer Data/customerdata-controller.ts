@@ -2,9 +2,14 @@ import { Request, Response } from 'express';
 import CustomerData from '../Customer Data/custmerdata-model';
 
 // Create a new company
-const createCompany = async (req: Request, res: Response) => {
+const createCompany = async (req, res) => {
   try {
-    const company = new CustomerData(req.body);
+    const company = new CustomerData({
+      ...req.body,
+      createdBy: req.user._id,
+      adminId: req.user.adminId || req.user._id
+    });
+
     try {
       await company.validate();
       await company.save();
@@ -29,7 +34,7 @@ const getAllCompanies = async (req: Request, res: Response) => {
 };
 
 // Update a company's status
-const updateCompany = async (req: Request, res: Response) => {
+const updateCompany = async (req, res) => {
   const { id } = req.params;
   const updateData = req.body;
 
@@ -39,8 +44,11 @@ const updateCompany = async (req: Request, res: Response) => {
       return res.status(404).json({ message: 'Company not found' });
     }
 
-    company.set(updateData);
-    
+    company.set({
+      ...updateData,
+      updatedBy: req.user._id 
+    });
+
     try {
       await company.save();
       res.status(200).json(company);

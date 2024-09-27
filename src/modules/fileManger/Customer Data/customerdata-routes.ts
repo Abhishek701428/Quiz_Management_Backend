@@ -2,17 +2,15 @@ import { Router } from 'express';
 const router = Router();
 
 import * as CustomerData from '../Customer Data/customerdata-controller';
-import { authenticateSuperAdminAndAdmin } from '../../../middleware/authMiddleware';
+import { authenticateSuperAdminAndAdmin, authenticateUsers } from '../../../middleware/authMiddleware';
+import { authorizeAccess } from '../../../middleware/get.authentication';
 //truck routes
-router.post('/create', CustomerData.createCompany);
-router.get('/getAll', CustomerData.getAllCompanies);
+router.post('/create',authorizeAccess, CustomerData.createCompany);
 
-//ACCORDING ADMIN GET AND CREATE 
-
-// router.post('/driver/create',authenticateSuperAdminAndAdmin, driverController.createDriver);
-// router.get('/driver/getAll',authenticateSuperAdminAndAdmin, driverController.getAllDrivers);
+router.get('/getAll',authorizeAccess, CustomerData.getAllCompanies);
 
 router.put('/update/:id', authenticateSuperAdminAndAdmin, CustomerData.updateCompany);
+
 router.delete('/delete/:id', authenticateSuperAdminAndAdmin, CustomerData.deleteCompany);
 
 export default router;

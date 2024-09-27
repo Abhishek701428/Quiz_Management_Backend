@@ -188,6 +188,9 @@ interface IDriver extends Document {
     token: string;
     status: boolean;
     approvedBy: string
+    createdBy: Schema.Types.ObjectId;
+    adminId: Schema.Types.ObjectId;  
+    updatedBy: Schema.Types.ObjectId;
 }
 
 const AddressSchema: Schema = new Schema({
@@ -377,7 +380,10 @@ const DriverSchema: Schema = new Schema({
     email: { type: String, unique: true, required: false },
     token: { type: String, unique: true, required: false },
     status: { type: Boolean, default: false },
-    approvedBy: { type: String }
+    approvedBy: { type: String },
+    createdBy: { type: Schema.Types.ObjectId, required: true },
+    adminId: { type: Schema.Types.ObjectId },
+    updatedBy: { type: Schema.Types.ObjectId },
 });
 
 const Driver = mongoose.model<IDriver>('DriverApplication', DriverSchema);

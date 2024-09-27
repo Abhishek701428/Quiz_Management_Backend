@@ -9,6 +9,9 @@ interface ICompany extends Document {
   rating: number;
   phoneNumber: string;
   status: 'APPROVED' | 'PENDING' | 'EXPIRING';
+  createdBy: Schema.Types.ObjectId;
+  adminId: Schema.Types.ObjectId;
+  updatedBy: Schema.Types.ObjectId;
 }
 
 const companySchema: Schema = new Schema(
@@ -51,6 +54,9 @@ const companySchema: Schema = new Schema(
       enum: ['APPROVED', 'PENDING', 'EXPIRING'],
       required: true,
     },
+    createdBy: { type: Schema.Types.ObjectId, required: true },
+    adminId: { type: Schema.Types.ObjectId },
+    updatedBy: { type: Schema.Types.ObjectId }
   },
 );
 
