@@ -18,6 +18,7 @@ import voilationRouter from './modules/driverApplicationpart/TrafficViolationpar
 import customerData from './modules/fileManger/Customer Data/customerdata-routes'
 import files from './modules/fileManger/Files/file-routes'
 import router from './permission/permission-update';
+import dotDataRoutes from './modules/dotnumber/dot.routes';
 dotenv.config();
 db();
 const app = express();
@@ -60,6 +61,9 @@ app.use('/api/customerdata', customerData)
 app.use('/api/file', files)
 //update permissions
 app.use(router)
+
+// DOTNUMBER Data api 
+app.use('/api', dotDataRoutes)
 
 const PORT = process.env.PORT || 4000;
 app.listen(PORT, () => {
