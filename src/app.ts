@@ -57,7 +57,7 @@ app.use('/api/experince', experinceRouter)
 app.use('/api/license', licenseRouter)
 app.use('/api/voilation', voilationRouter)
 // File Manager Module
-app.use('/api/customerdata', customerData)
+app.use('/api/filemanager', customerData)
 app.use('/api/file', files)
 //update permissions
 app.use(router)

@@ -2,64 +2,24 @@ import mongoose, { Document, Schema } from 'mongoose';
 
 interface ICompany extends Document {
   companyName: string;
-  mcNumber: string;
-  dotNumber: string;
-  city: string;
-  state: string;
-  rating: number;
-  phoneNumber: string;
-  status: 'APPROVED' | 'PENDING' | 'EXPIRING';
+  fileUpload: string;
+  description: string;
   createdBy: Schema.Types.ObjectId;
-  adminId: Schema.Types.ObjectId;
+  adminId: Schema.Types.ObjectId;   
   updatedBy: Schema.Types.ObjectId;
 }
 
 const companySchema: Schema = new Schema(
   {
-    companyName: {
-      type: String,
-      required: true,
-      trim: true,
-    },
-    mcNumber: {
-      type: String,
-      required: true,
-      unique: true,
-    },
-    dotNumber: {
-      type: String,
-      required: true,
-      unique: true,
-    },
-    city: {
-      type: String,
-      required: true,
-    },
-    state: {
-      type: String,
-      required: true,
-    },
-    rating: {
-      type: Number,
-      required: true,
-      min: 0,
-      max: 5,
-    },
-    phoneNumber: {
-      type: String,
-      required: true,
-    },
-    status: {
-      type: String,
-      enum: ['APPROVED', 'PENDING', 'EXPIRING'],
-      required: true,
-    },
+    companyName: { type: String, required: true },
+    fileUpload: { type: String, required: true },
+    description: { type: String, required: true },
     createdBy: { type: Schema.Types.ObjectId, required: true },
     adminId: { type: Schema.Types.ObjectId },
-    updatedBy: { type: Schema.Types.ObjectId }
+    updatedBy: { type: Schema.Types.ObjectId, }
   },
 );
 
-const CustomerData = mongoose.model<ICompany>('CustomerData', companySchema);
+const FileManager = mongoose.model<ICompany>('FileManager', companySchema);
 
-export default CustomerData;
+export default FileManager;
