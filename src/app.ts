@@ -4,21 +4,10 @@ import bodyParser from "body-parser";
 import db from './database/db'
 import path from 'path';
 import * as dotenv from "dotenv";
-import usersRoutes from './modules/authUsers/usersRoutes';
-import truckRouter from "./modules/truckList/router";
-import trailerRouter from "./modules/trailerList/trailer-routes";
-import driverRouter from "./modules/driverList/driver-routes";
-import driverapplicationRouter from './modules/driverApplication/driverApplication-routes'
-import companyRouter from './modules/companyProfile/companyprofile-routes'
-import companyCarrierRouter from './modules/companyCreate/company-routes'
-import accidentRouter from './modules/driverApplicationpart/Accidentpart/accident-routes'
-import experinceRouter from './modules/driverApplicationpart/Experiencepart/experience-routes'
-import licenseRouter from './modules/driverApplicationpart/Licensepart/license-routes'
-import voilationRouter from './modules/driverApplicationpart/TrafficViolationpart/traffic-routes'
-import customerData from './modules/fileManger/Customer Data/customerdata-routes'
-import files from './modules/fileManger/Files/file-routes'
-import router from './permission/permission-update';
-import dotDataRoutes from './modules/dotnumber/dot.routes';
+import usersRoutes from './modules/User_Authentication/user-routes';
+import quizRoutes from './modules/Quiz_Managment/quiz-router';
+
+
 dotenv.config();
 db();
 const app = express();
@@ -40,30 +29,9 @@ app.get('/', (req: Request, res: Response) => {
 
 //For Users 
 app.use('/api', usersRoutes);
-//For Trucks
-app.use('/api/truckList', truckRouter);
-//For Trailers
-app.use('/api/trailerList', trailerRouter)
-//For Drivers
-app.use('/api/driverList', driverRouter)
-//For Driver Application
-app.use('/api/driverapplication', driverapplicationRouter)
-//For Company Profile
-app.use('/api/company', companyRouter)
-app.use('/api/companycarrier', companyCarrierRouter)
-//For DriverApplications Part 
-app.use('/api/accident', accidentRouter)
-app.use('/api/experince', experinceRouter)
-app.use('/api/license', licenseRouter)
-app.use('/api/voilation', voilationRouter)
-// File Manager Module
-app.use('/api/filemanager', customerData)
-app.use('/api/file', files)
-//update permissions
-app.use(router)
+//For Quiz
+app.use('/api/quiz', quizRoutes);
 
-// DOTNUMBER Data api 
-app.use('/api', dotDataRoutes)
 
 const PORT = process.env.PORT || 4000;
 app.listen(PORT, () => {

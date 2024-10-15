@@ -1,11 +1,8 @@
 import { Request, Response, NextFunction } from 'express';
+import User from '../modules/User_Authentication/user-model';
 import jwt, { JsonWebTokenError, TokenExpiredError } from 'jsonwebtoken';
-import * as dotenv from "dotenv";
-import User from '../modules/authUsers/usersModels';
 
-dotenv.config();
-
-export const authenticateAndAuthorize = (
+export const Protect = (
   allowedRoles: string[]
 ) => async (req: Request, res: Response, next: NextFunction) => {
   const token = req.headers.authorization?.split(' ')[1] || req.header('Authorization');
@@ -40,9 +37,4 @@ export const authenticateAndAuthorize = (
       return res.status(500).json({ message: 'Internal server error.' });
     }
   }
-};
-
-// Middleware shortcuts for role-based authentication
-export const authenticateSuperAdmin = authenticateAndAuthorize(['superadmin']);
-export const authenticateSuperAdminAndAdmin = authenticateAndAuthorize(['superadmin', 'admin','superadminuser']);
-export const authenticateUsers = authenticateAndAuthorize(['superadmin', 'admin', 'adminuser', 'superadminuser']);
+}

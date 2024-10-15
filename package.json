@@ -31,7 +31,8 @@
     "mongoose": "^6.3.8",
     "multer": "^1.4.5-lts.1",
     "nodemailer": "^6.9.14",
-    "path": "^0.12.7"
+    "path": "^0.12.7",
+    "tracking-backend": "file:"
   },
   "devDependencies": {
     "@types/cors": "^2.8.17",
